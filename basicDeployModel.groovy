@@ -3,7 +3,6 @@ Format: Electric Flow DSL
 File: basicDeployModel.groovy
 Description: Electric Flow Deploy model template
 
-ectool login admin changeme
 ectool --format json evalDsl --dslFile basicDeployModel.groovy
 
 ectool createArtifact --groupId com.ec.sample --artifactKey sample_app_tier1_comp
