@@ -189,11 +189,6 @@ project projectName, {
 	}
 }
 
-
-"rm -f /tmp/debug.log".execute()
-def logfile= new File('/tmp/debug.log')
-//logfile << artifactVersions
-
 artifactVersions.each { ar ->
 	// Create artifact version
 	transaction {
