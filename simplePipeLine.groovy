@@ -29,10 +29,10 @@ def states = ['Artifacts Ready','Test','UAT','Production']
 
 project projName, {
 	workflowDefinition workflowDefinitionName: workflow,
-		workflowNameTemplate: "$workflow_" + '$' + "[/increment /server/ec_counters/workflowCounter]", {
+		workflowNameTemplate: workflow + '_' + '$' + "[/increment /server/ec_counters/workflowCounter]", {
 		states.each { stateName ->
 			procedure "${stateName}_proc", 
-				jobNameTemplate: "$stateName_" + '$' + "[/increment /server/ec_counters/jobCounter]", {
+				jobNameTemplate: stateName + '_' + '$' + "[/increment /server/ec_counters/jobCounter]", {
 					step stepName: 'DEMO: NOP',
 						command: ""
 			}
