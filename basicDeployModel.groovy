@@ -5,9 +5,6 @@ Description: Electric Flow Deploy model template
 
 ectool --format json evalDsl --dslFile basicDeployModel.groovy
 
-ectool createArtifact --groupId com.ec.sample --artifactKey sample_app_tier1_comp
-ectool createArtifact --groupId com.ec.sample --artifactKey sample_app_tier2_comp
-ectool publishArtifactVersion --artifactName com.ec.sample:sample_app_tier2_comp --includePatterns installer.sh --fromDirectory . --version 1.5
 */
 
 // Customizable values ------------------
@@ -24,13 +21,16 @@ def appEnvTiers = ["sample_app_tier1":"sample_env_tier1", "sample_app_tier2":"sa
 // Artifact group id
 def artifactRoot = "com.ec.sample"
 
+// Project name - currently only "Default" is supported by the Electric Flow Deploy UI
+def projectName = "Default"
+
 // ---------------------------------------
 
 def envTiers = appEnvTiers.values()
 def appTiers = appEnvTiers.keySet()
 
 // Remove old application model
-deleteApplication (projectName: "Default", applicationName: appName) 
+deleteApplication (projectName: projectName, applicationName: appName) 
 
 // Remove old Environment models
 envs.each { env ->
@@ -38,12 +38,14 @@ envs.each { env ->
 		def res = "${env}_${tier}"
 		deleteResource resourceName: res
 	}
-	deleteEnvironment(projectName: "Default", environmentName: env)
+	deleteEnvironment(projectName: projectName, environmentName: env)
 }
 
 // Create new -------------------------------
 
-project "Default", {
+def artifactVersions = []
+
+project projectName, {
 
 	// Create Environments, Tiers and Resources
 	envs.each { env ->
@@ -63,18 +65,24 @@ project "Default", {
 		appTiers.each() { tier ->
 			applicationTier tier, {
 				def compName = "${tier}_comp"
+				def artifactVersion = "1.35"
+				def artifactName_ = artifactRoot + ':' + compName
+				artifactVersions << [artifactName: artifactName_, artifactVersion: artifactVersion]
+				// Create artifact
+				artifact groupId: artifactRoot, artifactKey: compName
+				//def artifactName = "com.ec.test:test"
+			
 				component componentName: compName, pluginName: "EC-Artifact-1.0.9.76076", {
 					ec_content_details.with { 
 						pluginProjectName = "EC-Artifact"
 						pluginProcedure = "Retrieve"
-						artifactName = "$artifactRoot:$compName"
+						artifactName = artifactName_
 						filterList = ""
 						overwrite = "update"
-						versionRange = "1.5"
+						versionRange = artifactVersion
 						artifactVersionLocationProperty = "/myJob/retrievedArtifactVersions/\$" + "[assignedResourceName]"
 					}
-					// TODO: Create artifact and artifact versions
-					//createArtifact groupId: artifactRoot, artifactKey: compName
+
 					process processName: "Install",
 						processType: "DEPLOY",
 						//componentApplicationName: this.applicationName,
@@ -89,6 +97,7 @@ project "Default", {
 							subproject: "/plugins/EC-Artifact/project",
 							applicationName: null,
 							applicationTierName: null,
+							//includeCompParameterRef: true
 							actualParameter: [ 
 								artifactName : "\$" + "[/myComponent/ec_content_details/artifactName]",
 								artifactVersionLocationProperty : "\$" + "[/myComponent/ec_content_details/artifactVersionLocationProperty]",
@@ -139,7 +148,7 @@ project "Default", {
 
 		envs.each { env -> 
 			tierMap tierMapName: "$appName-$env",
-				environmentProjectName: "Default", // Replace with projectName reference
+				environmentProjectName: projectName, // Replace with projectName reference
 				environmentName: env,
 				tierMapping: appEnvTiers			
 		}
@@ -147,3 +156,55 @@ project "Default", {
 	} // Applications
 
 } // project
+
+// Create publishArtifact procedure
+
+project projectName, {
+	procedure "publishArtifact", {
+		formalParameter "artifactName", type: "textentry", required: "1"
+		formalParameter "artifactVersion", type: "textentry", required: "1"
+		formalParameter "fileName", type: "textentry", required: "1"
+		formalParameter "fileContent", type: "textarea", required: "1"
+		
+		step "Create File",
+			subproject: "/plugins/EC-FileOps/project",
+			subprocedure: "AddTextToFile",
+			actualParameter: [
+				Path: '$' + "[fileName]",
+				Content: '$' + "[fileContent]",
+				AddNewLine: "0",
+				Append: "0"
+			]
+			
+		step "Publish Artifact",
+			subproject: "/plugins/EC-Artifact/project",
+			subprocedure: "Publish",
+			actualParameter: [
+				artifactName: '$' + "[artifactName]",
+				artifactVersionVersion: '$' + "[artifactVersion]",
+				includePatterns: '$' + "[fileName]",
+				repositoryName: "Default"
+				//fromLocation:
+			]
+	}
+}
+
+
+"rm -f /tmp/debug.log".execute()
+def logfile= new File('/tmp/debug.log')
+//logfile << artifactVersions
+
+artifactVersions.each { ar ->
+	// Create artifact version
+	transaction {
+		runProcedure procedureName: "publishArtifact", projectName: projectName,
+			actualParameter: [
+				artifactName: ar.artifactName,
+				fileContent: "echo Installing " + ar.artifactName,
+				fileName: "installer.sh",
+				artifactVersion: ar.artifactVersion
+				]
+	}
+}
+
+
