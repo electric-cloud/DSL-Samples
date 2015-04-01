@@ -24,7 +24,7 @@ def projName = "Sample CI Project"
 def procedures = ["Stream1","Stream2","Stream3","Stream4"]
 
 // Remove old Project
-	//transaction {deleteProject (projectName: projName)}
+	//transaction {deleteProject (projectName: projName, foreground: true)}
 	
 // Create new
 
