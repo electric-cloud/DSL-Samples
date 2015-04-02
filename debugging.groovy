@@ -8,5 +8,9 @@ ectool evalDsl --dslFile debugging.groovy
 def logfile= new File('/tmp/debug.log')
 
 transaction {
-logfile << getApplications(projectName: 'Default').application //.responses[0].application[0].applicationName
+//logfile << getProcedures(projectName: 'Hello Project')[0].procedure //.responses[0].application[0].applicationName
+	getApplications(projectName: 'Default').each {
+		logfile << it.application
+		logfile << "\n"
+	}
 }
