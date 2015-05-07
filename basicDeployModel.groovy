@@ -52,8 +52,10 @@ project projectName, {
 		environment environmentName: env, {
 			envTiers.each() { tier ->
 				def res = "${env}_${tier}"
-				resource resourceName: res, hostName : "localhost"
-				environmentTier tier, { addResourceToEnvironmentTier(resourceName: res) }
+				environmentTier tier, {
+					// create and add resource to the Tier
+					resource resourceName: res, hostName : "localhost"
+				}
 			}
 		}
 	} // Environments
