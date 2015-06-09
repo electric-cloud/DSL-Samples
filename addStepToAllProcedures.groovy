@@ -16,9 +16,6 @@ Command-line run instructions
 	ectool --format json evalDsl --dslFile addStepToAllProcedures.groovy
 */
 
-"rm -f /tmp/debug.log".execute()
-def logfile= new File('/tmp/debug.log')
-
 project "Hello Project", {
 	getProcedures().each { 
 		procedure it.name, {
