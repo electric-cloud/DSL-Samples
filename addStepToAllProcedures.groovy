@@ -11,16 +11,19 @@ Command-line run instructions
 -----------------------------
 	Run helloProcedure.groovy first to populate the project:
 	
-	ectool --format json evalDsl --dslFile helloProcedure.pl
+	ectool --format json evalDsl --dslFile helloProcedure.groovy
 	
 	ectool --format json evalDsl --dslFile addStepToAllProcedures.groovy
 */
 
+"rm -f /tmp/debug.log".execute()
+def logfile= new File('/tmp/debug.log')
+
 project "Hello Project", {
-	getProcedures.each {
+	getProcedures().each { 
 		procedure it.name, {
 			step "Added to all my procedures",
-				command: "echo Added to each procedure"
+				command: "echo Added to each procedure" 
 		}
 	}
 }

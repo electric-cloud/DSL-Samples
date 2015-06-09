@@ -13,6 +13,10 @@ Runs the procedure
 Command-line run instructions
 ----------------------------- 
 	ectool --format json evalDsl --dslFile publishArtifact.groovy
+	
+Run from Command Step
+---------------------
+	Set shell to:  ectool evalDsl --dslFile {0}
 */
 
 projectName="test2"
