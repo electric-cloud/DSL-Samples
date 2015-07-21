@@ -4,13 +4,16 @@ File: example60Pipeline.groovy
 Description: Example Pipeline model using the new 6.0 pipeline feature
 
 Run basicDeployModel first:
+
 ectool --format json evalDsl --dslFile basicDeployModel.groovy
+
+Then this model:
 
 ectool evalDsl --dslFile example60Pipeline.groovy
 
-*/
+Kick off the pipeline form the user interface
 
-def dslDir = "/vagrant/demo/pipelines/"
+*/
 
 // Settings
 def proj = "Default"
