@@ -1,6 +1,6 @@
 /*
 
-ectool evalDsl --dslFile debugging.groovy
+ectool evalDsl --dslFile debugging.groovy; cat /tmp/debug.log
 
 */
 
@@ -8,9 +8,6 @@ ectool evalDsl --dslFile debugging.groovy
 def logfile= new File('/tmp/debug.log')
 
 transaction {
-//logfile << getProcedures(projectName: 'Hello Project')[0].procedure //.responses[0].application[0].applicationName
-	getApplications(projectName: 'Default').each {
-		logfile << it.name
-		logfile << "\n"
-	}
+	logfile << getProperty(propertyName: "/myUser/ec_ci/ciProjects").value
+	logfile << "\n"
 }
