@@ -52,7 +52,7 @@ project proj, {
 	pipeline pipe, {
 		// Pipeline parameters
 		formalParameter "app",
-			type: "textentry",
+			type: "entry",
 			required: "1",
 			defaultValue: "Example Pipeline",
 			label: "Application Name",
