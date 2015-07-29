@@ -9,13 +9,13 @@ ectool evalDsl --dslFile "Onboard new application flow.groovy"
 
 */
 
-def dslDir = "/vagrant/onboarding/"
+def dslDir = "/vagrant/DSL-Samples/onboarding/"
 
 project "Application Onboarding", {
 
 	property "dslDir", value: dslDir
 	property "stages", value: '[dev: "Development", qa: "Testing", st: "Staging", pr: "Release"]'
-
+	
 	procedure "Onboard new application flow",{
 		formalParameter "appName", required: "1"
 		formalParameter "artifactKey", required: "1"

@@ -9,17 +9,42 @@ def appName  = "$[appName]"
 def appTech  = "$[appTech]"
 def artifactGroup = "$[artifactGroup]"
 def artifactKey = "$[artifactKey]"
+
+def artifactName_ = "${artifactGroup}:${artifactKey}"
 		
 project appName, {
 	procedure "Build",{
 		
 		step "Get Sources"
-		step "Compile"
+		
+		step "Compile",
+			subproject: "/plugins/EC-FileOps/project",
+			subprocedure: "AddTextToFile",
+			actualParameter: [
+				Path: "installer.sh",
+				Content: (String) "echo installing $appName",
+				AddNewLine: "0",
+				Append: "0"
+			]
+			
 		step "Post Results",
 			command: "ectool setProperty /myPipelineStageRuntime/ec_summary/buildResults " +
 				'\"<html>Build Results</html>\"'			
-		step "Publist Artifacts"
 		
+		step "Create Artifact Location",
+			command: "artifact groupId: \"$artifactGroup\", artifactKey: \"$artifactKey\"",
+			shell: "ectool evalDsl --dslFile {0}"
+			
+		step "Publish Artifact",
+			subproject: "/plugins/EC-Artifact/project",
+			subprocedure: "Publish",
+			actualParameter: [
+				artifactName: (String) artifactName_,
+				artifactVersionVersion: "1.0.0-" + '$' + "[/increment /myProject/buildIndex]",
+				includePatterns: "installer.sh",
+				repositoryName: "Default"
+				//fromLocation:
+			]
 	} // Procedure Build
 	
 	procedure "Create Snapshot",{

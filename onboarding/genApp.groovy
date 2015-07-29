@@ -13,7 +13,7 @@ def stages = $[/myProject/stages] // Literal string to create stage mapping of l
 
 def envTier = "Wildfly"
 def appTier = "App Svr"
-def artifactVersion = "1.35"
+def artifactVersion = "" // Latest
 def artifactName_ = artifactGroup + ':' + artifactKey
 
 def appEnvTiers = [(appTier):envTier]
