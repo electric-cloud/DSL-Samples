@@ -8,38 +8,9 @@ Command-line run instructions
 ectool evalDsl --dslFile "Onboard new application flow.groovy"
 
 */
+import groovy.json.JsonSlurper
 
 def dslDir = "/vagrant/DSL-Samples/onboarding/"
-
-/* TODO
-
-1. Create parameters and parameter form from file:
-{
-  "paramA": {
-    "label": "Param A Label",
-    "documentation": "Detailed description",
-    "defaultValue": "defVal",
-    "options": [
-      "opt1",
-      "opt2"
-    ]
-  }
-}
-
-(See Custom parameter form contents)
-ec_parameterForm:
-<editor>
-    <formElement>
-        <label>One:</label>
-        <property>one</property>
-        <documentation>The first parameter.</documentation>
-        <type>entry</type>
-        <value>Test value</value>
-    </formElement>
-</editor>
-
-
-*/
 
 project "Application Onboarding", {
 
@@ -47,19 +18,49 @@ project "Application Onboarding", {
 	property "stages", value: '[dev: "Development", qa: "Testing", st: "Staging", pr: "Release"]'
 	
 	procedure "Onboard new application flow",{
-		formalParameter "appName", required: "1"
-		formalParameter "artifactKey", required: "1"
-		formalParameter "artifactGroup", required: "1"
-		formalParameter "buildIp", required: "1"
-		formalParameter "deployIp", required: "1"
-		formalParameter "appTech", required: "1", type: "select", default: "java"
-		ec_customEditorData.parameters.appTech.with {
-			formType = "standard"
-			options.with {
-				type = "simpleList"
-				list = "java|dotNet"
+	
+		// Parse in parameters from file
+		def jsonSlurper = new JsonSlurper()
+		def params = jsonSlurper.parseText(new File(dslDir + "parameters.json").text)
+		def ec_parameterForm="<editor>\n"
+		params.each { param, details ->
+			def xmlType = "entry"
+			formalParameter param, required: "1", type: xmlType // Default parameter type
+			ec_parameterForm += "\t<formElement>\n"
+			ec_parameterForm += "\t\t<property>$param</property>\n"
+			details.each { k, v ->
+				switch (k) {
+					case "options":
+						xmlType = "select"
+						formalParameter param, type: xmlType
+						ec_customEditorData.parameters.appTech.with {
+							formType = "standard"
+							options.with {
+								type = "simpleList"
+								list = v.join("|")
+							}
+						} // property sheet ec_customEditorData
+						v.each { val ->
+							ec_parameterForm += "\t\t\t<option>\n"
+							ec_parameterForm += "\t\t\t\t<name>$val</name>\n"
+							ec_parameterForm += "\t\t\t\t<value>$val</value>\n"
+							ec_parameterForm += "\t\t\t</option>\n"
+						}
+						break
+					case ["description","label","defaultValue"]:
+						formalParameter param, (k): v
+						if (k=="description") k="documentation"
+						if (k=="defaultValue") k="value"
+						ec_parameterForm += "\t\t<$k>$v</$k>\n"
+						break
+				}
 			}
-		} // property sheet ec_customEditorData
+			ec_parameterForm += "\t\t<type>$xmlType</type>\n"		
+			ec_parameterForm += "\t</formElement>\n"
+		}​
+		ec_parameterForm += "</editor>\n"
+		property "ec_parameterForm", value: ec_parameterForm
+		// End of parse in parameters
 		
 		step "Generate Procedures",
 			description: "Create Build, Snapshot, Unit Test, System Test procedures",
