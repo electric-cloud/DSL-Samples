@@ -82,7 +82,7 @@ project "Default", {
 
 			task "System Tests",
 				taskType: 'PROCEDURE',
-				subproject: projectName,
+				subproject: appName,
 				subprocedure: 'System Tests'
 				
 		} // Stage QA
