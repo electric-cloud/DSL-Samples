@@ -11,6 +11,36 @@ ectool evalDsl --dslFile "Onboard new application flow.groovy"
 
 def dslDir = "/vagrant/DSL-Samples/onboarding/"
 
+/* TODO
+
+1. Create parameters and parameter form from file:
+{
+  "paramA": {
+    "label": "Param A Label",
+    "documentation": "Detailed description",
+    "defaultValue": "defVal",
+    "options": [
+      "opt1",
+      "opt2"
+    ]
+  }
+}
+
+(See Custom parameter form contents)
+ec_parameterForm:
+<editor>
+    <formElement>
+        <label>One:</label>
+        <property>one</property>
+        <documentation>The first parameter.</documentation>
+        <type>entry</type>
+        <value>Test value</value>
+    </formElement>
+</editor>
+
+
+*/
+
 project "Application Onboarding", {
 
 	property "dslDir", value: dslDir

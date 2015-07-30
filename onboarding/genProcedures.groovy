@@ -54,7 +54,7 @@ project appName, {
 			command:  "ectool deleteSnapshot Default \"${appName}\" \"${appName}-1.0\""
 		
 		step "createSnapshot", 
-			command: "ectool createSnapshot Default \"${appName}\" \"${appName}-1.0\" --environmentName " + '$' + "[env]"		
+			command: "ectool createSnapshot Default \"${appName}\" \"${appName}-1.0\" --environmentName \"" + '$' + "[env]\""		
 	}
 	
 	procedure "Code Scan",{
