@@ -1,0 +1,31 @@
+{
+  "appName": {
+    "label": "Application Name",
+    "description": "The name of the application to be on-boarded"
+  },
+  "artifactGroup": {
+    "label": "Artifact Group",
+    "description": "Artifact Group such as com.example"
+  },
+  "artifactKey": {
+    "label": "Artifact Key",
+    "description": "Artifact Key such as myapp"
+  },
+  "buildIp": {
+    "label": "Build Machine",
+    "description": "Hostname or IP of build machine"
+  },
+  "deployIp": {
+    "label": "Application Server",
+    "description": "Hostname or IP of application server"
+  },
+  "appTech": {
+    "label": "Application technology",
+    "description": "Application development language and technology",
+    "defaultValue": "Java",
+    "options": [
+      "Java",
+      "dotNet"
+    ]
+  }
+}
