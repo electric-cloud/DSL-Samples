@@ -23,16 +23,18 @@ project "Application Onboarding", {
 		def jsonSlurper = new JsonSlurper()
 		def params = jsonSlurper.parseText(new File(dslDir + "parameters.json").text)
 		def ec_parameterForm="<editor>\n"
-		params.each { param, details ->
+		params.each { param ->
 			def xmlType = "entry"
-			formalParameter param, required: "1", type: xmlType // Default parameter type
+			formalParameter param.name, required: "1", type: xmlType // Default parameter type
 			ec_parameterForm += "\t<formElement>\n"
-			ec_parameterForm += "\t\t<property>$param</property>\n"
-			details.each { k, v ->
+			ec_parameterForm += "\t\t<property>$param.name</property>\n"
+			param.each { k, v ->
 				switch (k) {
+					case "name":
+						break
 					case "options":
 						xmlType = "select"
-						formalParameter param, type: xmlType
+						formalParameter param.name, type: xmlType
 						ec_customEditorData.parameters.appTech.with {
 							formType = "standard"
 							options.with {
@@ -48,7 +50,7 @@ project "Application Onboarding", {
 						}
 						break
 					case ["description","label","defaultValue"]:
-						formalParameter param, (k): v
+						formalParameter param.name, (k): v
 						if (k=="description") k="documentation"
 						if (k=="defaultValue") k="value"
 						ec_parameterForm += "\t\t<$k>$v</$k>\n"
