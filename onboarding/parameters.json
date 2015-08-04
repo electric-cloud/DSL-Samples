@@ -2,27 +2,38 @@
   {
     "name": "appName",
     "label": "Application Name",
-    "description": "The name of the application to be on-boarded"
+    "description": "The name of the application to be on-boarded",
+    "defaultValue" : "My Application"
+  },
+  {
+    "name": "sourceLocation",
+    "label": "Source Code Location",
+    "description": "SCM location for CI",
+    "defaultValue" : "http://gitlab.mycompany.com/apps/myapp.git"
   },
   {
     "name": "artifactGroup",
     "label": "Artifact Group",
-    "description": "Artifact Group such as com.example"
+    "description": "Artifact Group such as com.mycompany",
+    "defaultValue" : "com.mycompany"
   },
   {
     "name": "artifactKey",
     "label": "Artifact Key",
-    "description": "Artifact Key such as myapp"
+    "description": "Artifact Key such as myapp",
+    "defaultValue" : "myapp"
   },
   {
     "name": "buildIp",
     "label": "Build Machine",
-    "description": "Hostname or IP of build machine"
+    "description": "Hostname or IP of build machine",
+    "defaultValue" : "flow"
   },
   {
     "name": "deployIp",
     "label": "Application Server",
-    "description": "Hostname or IP of application server"
+    "description": "Hostname or IP of application server",
+    "defaultValue" : "flow"
   },
   {
     "name": "appTech",
