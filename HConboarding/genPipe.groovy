@@ -42,7 +42,7 @@ project "Default", {
 			task "Application URL",
 				taskType: 'PROCEDURE',
 				subproject: appName,
-				subprocedure: 'Build',
+				subprocedure: 'Application URL',
 				expansionDeferred: "1",
 				errorHandling: "ignore"
 				
