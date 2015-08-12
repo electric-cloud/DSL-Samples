@@ -17,6 +17,26 @@ def scmDestination  = "$[scmDestination]"
 def artifactName_ = "${artifactGroup}:${artifactKey}"
 		
 project appName, {
+
+	procedure "Simulate Commit For Demo",{
+		formalParameter "commitMessage", defaultValue: "Correct typo, jira:EC-1234,EC-1235,EC-1236"
+		
+		step "make_correction", command: "" +
+			"sed -i 's/home.login =.*/home.login = Login/' /tmp/DemoSite-dev/site/src/main/resources/messages.properties\n" +
+			"echo \\# Making sure file is modified " + '$' + "[/javascript Math.random()] >> /tmp/DemoSite-dev/site/src/main/resources/messages.properties"
+		
+		step "commit_changes", command: ""+
+			"cd /tmp/DemoSite-dev\n" +
+			"svn commit \\\n" +
+			"-m \'"+'$'+"[commitMessage]\' \\\n" +
+			"site/src/main/resources/messages.properties"
+		
+		step "simulate_ci_trigger", command: "" +
+			"ectool setProperty /myProject/schedules/trunk/ec_customEditorData/TriggerFlag 2\n" +
+			"ectool runProcedure \"Electric Cloud\" --scheduleName ECSCM-SentryMonitor"
+	
+	}
+
 	procedure "Build",{		
 		
 		step "set_build_number",
