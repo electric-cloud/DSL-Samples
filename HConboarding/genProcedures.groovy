@@ -51,7 +51,8 @@ project appName, {
 				
 		step "build_mvn",
 			command: "ectool --silent setProperty /myJob/ec_job_progress_status \'Building code...\'\n" +
-				"cd "+'$'+"[srcdir] && mvn -o -Ddependency.locations.enabled=false package"
+				"cd "+'$'+"[srcdir] && mvn -o -Ddependency.locations.enabled=false package",
+			postProcessor: "postp --loadProperty /myStep/ignoreMvnWarnings"
 				
 		step "clean_artifacts",
 			command: "ectool deleteArtifactVersion com.mycompany.heatclinic:warfile:1.0-"+'$'+"[build_number]\n"+
