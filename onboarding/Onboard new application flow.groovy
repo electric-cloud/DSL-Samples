@@ -60,6 +60,7 @@ project "Application Onboarding", {
 			ec_parameterForm += "\t\t<type>$xmlType</type>\n"		
 			ec_parameterForm += "\t</formElement>\n"
 		}​
+		
 		ec_parameterForm += "</editor>\n"
 		property "ec_parameterForm", value: ec_parameterForm
 		// End of parse in parameters
@@ -74,21 +75,33 @@ project "Application Onboarding", {
 					executePrivilege : 'allow',
 					modifyPrivilege : 'allow',
 					readPrivilege : 'allow'
-			""".stripIndent()
-		
+				property '/jobs/\$[/myJob]/aclEntry', value: 'project: \$[appName]'
+			""".stripIndent()		
+			
 		step "Generate Procedures",
 			description: "Create Build, Snapshot, Unit Test, System Test procedures",
 			command: new File(dslDir + "genProcedures.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
+		
 		step "Generate Environment and Application Models",
 			command: new File(dslDir + "genApp.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
+		
 		step "Generate Pipeline",
 			command: new File(dslDir + "genPipe.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
+		
 		step "Generate CI Configuration",
 			command: new File(dslDir + "genCi.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
-		
+			
+
 	} // Procedure "Onboard new application flow"
+	
+	procedure "Clean",{
+		formalParameter "refJobId", required: "true"
+		step "Remove all objects",
+			command: new File(dslDir + "clean.groovy").text,
+			shell: "ectool evalDsl --dslFile {0}"
+	}
 }

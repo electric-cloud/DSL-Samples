@@ -4,6 +4,7 @@ File: genApp.groovy
 Description: Create environment and application models
 
 */
+import groovy.json.JsonOutput
 
 def appName  = "$[appName]"
 def appTech  = "$[appTech]"
@@ -20,14 +21,24 @@ def appEnvTiers = [(appTier):envTier]
 
 project "Default", {
 	// Create Environments, Tiers and Resources
+	def resources = []
+	def environments = []
 	stages.each { envShorthand, envName ->
-		environment "${envShorthand}-${appName}", {
+		env = "${envShorthand}-${appName}"
+		environments.push(env)
+		environment env, {
 			environmentTier envTier, {
 				// create and add resource to the Tier
-				resource resourceName: "${environmentName}_${envTier}", hostName : "localhost"
+				res = "${environmentName}_${envTier}"
+				resources.push(res)
+				resource resourceName: res, hostName : "localhost"
+
 			} // environmentTier
 		} // environment
 	} // Environments
+	
+	property '/jobs/$[/myJob]/resources', value: JsonOutput.toJson(resources)	
+	property '/jobs/$[/myJob]/environments', value: JsonOutput.toJson(environments)	
 	
 	application applicationName: appName, {
 		applicationTier appTier, {
