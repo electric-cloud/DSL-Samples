@@ -73,7 +73,7 @@ project appName, {
 			command: "ectool --silent setProperty /myJob/ec_job_progress_status \'Building code...\'\n" +
 				"cd "+'$'+"[srcdir] && mvn -o -Ddependency.locations.enabled=false package"/*,
 			postProcessor: "postp --loadProperty /myStep/ignoreMvnWarnings" , {
-				property "ignoreMvnWarnings", valueFile: dslDir + "ignoreMvnWarning.pl"
+				ignoreMvnWarnings = new File(dslDir + "ignoreMvnWarning.pl").text
 			} */
 				
 		step "clean_artifacts",

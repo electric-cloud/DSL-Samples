@@ -29,7 +29,7 @@ project appName, {
 			
 		step "Post Results",
 			command: "ectool setProperty /myPipelineStageRuntime/ec_summary/buildResults " +
-				'\"<html>Build Results</html>\"'			
+				'\"<html><a href=\\\"http://www.electric-cloud.com/\\\">Build Results</a></html>\"'		
 		
 		step "Create Artifact Location",
 			command: "artifact groupId: \"$artifactGroup\", artifactKey: \"$artifactKey\"",
@@ -61,7 +61,7 @@ project appName, {
 		
 		step "Post Results",
 			command: "ectool setProperty /myPipelineStageRuntime/ec_summary/codeScanResults " +
-				'\"<html>Code Scan Results</html>\"'
+				'\"<html><a href=\\\"http://www.electric-cloud.com/\\\">Code Scan Results</a></html>\"'
 		
 	} 
 
@@ -69,7 +69,7 @@ project appName, {
 		
 		step "Create application link",
 			command: "ectool setProperty /myPipelineStageRuntime/ec_summary/appUrl " +
-				'\"<html>Application URL</html>\"'
+				'\"<html><a href=\\\"http://www.electric-cloud.com/\\\">Application URL</a></html>\"'
 		
 	}
 	
@@ -77,7 +77,7 @@ project appName, {
 		
 		step "Post Results",
 			command: "ectool setProperty /myPipelineStageRuntime/ec_summary/systemTestResults " +
-				'\"<html>System Test Results</html>\"'
+				'\"<html><a href=\\\"http://www.electric-cloud.com/\\\">System Test</a></html>\"'
 		
 	}
 
@@ -85,7 +85,7 @@ project appName, {
 		
 		step "Post Results",
 			command: "ectool setProperty /myPipelineStageRuntime/ec_summary/smokeTestResults " +
-				'\"<html>Smoke Test Results</html>\"'
+				'\"<html><a href=\\\"http://www.electric-cloud.com/\\\">Smoke Test Results</a></html>\"'
 		
 	}
 

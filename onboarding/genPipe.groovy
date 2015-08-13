@@ -42,7 +42,7 @@ project "Default", {
 			task "Application URL",
 				taskType: 'PROCEDURE',
 				subproject: appName,
-				subprocedure: 'Build',
+				subprocedure: 'Application URL',
 				expansionDeferred: "1",
 				errorHandling: "ignore"
 				
@@ -79,7 +79,14 @@ project "Default", {
 				taskType: "PROCESS",
 				actualParameter: [ ec_smartDeployOption: "true" ],
 				errorHandling: "ignore"
-
+				
+			task "Application URL",
+				taskType: 'PROCEDURE',
+				subproject: appName,
+				subprocedure: 'Application URL',
+				expansionDeferred: "1",
+				errorHandling: "ignore"
+				
 			task "System Tests",
 				taskType: 'PROCEDURE',
 				subproject: appName,
@@ -108,7 +115,14 @@ project "Default", {
 					taskType: "PROCESS",
 					actualParameter: [ ec_smartDeployOption: "true" ],
 					errorHandling: "ignore"
-
+				
+				task "Application URL",
+					taskType: 'PROCEDURE',
+					subproject: appName,
+					subprocedure: 'Application URL',
+					expansionDeferred: "1",
+					errorHandling: "ignore"
+				
 				task "Smoke Tests",
 					taskType: 'PROCEDURE',
 					subproject: appName,

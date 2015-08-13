@@ -64,15 +64,16 @@ project "Default", {
 							artifactVersionLocationProperty : "\$" + "[/myComponent/ec_content_details/artifactVersionLocationProperty]",
 							filterList : "\$" + "[/myComponent/ec_content_details/filterList]",
 							overwrite : "\$" + "[/myComponent/ec_content_details/overwrite]",
-							versionRange : "\$" + "[/myJob/ec_" + artifactKey + "-version]"
+							//versionRange : "\$" + "[/myJob/ec_" + artifactKey + "-version]"
+							versionRange : "\$" + "[/myJob/ec_" + componentName + "-version]"
 						]
-						
+					/*
 					processStep processStepName: "Deploy Artifact",
 						applicationName: null,
 						applicationTierName: null,
 						componentApplicationName: appName,
 						command: "echo testing $artifactKey..."
-						
+					*/
 					processStep processStepName: "Deploy Artifact",
 						processStepType: 'command',
 						subproject: '/plugins/EC-Core/project',
@@ -92,20 +93,22 @@ project "Default", {
 				}
 			} // Components
 
-			process processName: "Deploy",{
-				processStep  processStepName: "Install $artifactKey",
-					processStepType: 'process',
-					componentName: null,
-					applicationName: appName,
-					componentApplicationName: appName,
-					errorHandling: 'failProcedure',
-					subcomponent: artifactKey,
-					subcomponentApplicationName: appName,
-					subcomponentProcess: "Install",
-					applicationTierName: appTier
-			}
-		} 
 
+		}
+		
+		process processName: "Deploy",{
+			processStep  processStepName: "Install $artifactKey",
+				processStepType: 'process',
+				componentName: null,
+				applicationName: appName,
+				componentApplicationName: appName,
+				errorHandling: 'failProcedure',
+				subcomponent: artifactKey,
+				subcomponentApplicationName: appName,
+				subcomponentProcess: "Install",
+				applicationTierName: appTier
+		}
+		
 		stages.each { envShorthand, envName ->
 			tierMap tierMapName: "$appName-$envShorthand",
 				environmentProjectName: projectName, // Replace with projectName reference

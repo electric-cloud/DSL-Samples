@@ -63,6 +63,18 @@ project "Application Onboarding", {
 		ec_parameterForm += "</editor>\n"
 		property "ec_parameterForm", value: ec_parameterForm
 		// End of parse in parameters
+
+		step "Open Permissions",
+			shell: "ectool evalDsl --dslFile {0}",
+			command: """\
+				aclEntry principalName : 'project: \$[appName]',
+					principalType : 'user',
+					systemObjectName : 'server',
+					changePermissionsPrivilege : 'allow',
+					executePrivilege : 'allow',
+					modifyPrivilege : 'allow',
+					readPrivilege : 'allow'
+			""".stripIndent()
 		
 		step "Generate Procedures",
 			description: "Create Build, Snapshot, Unit Test, System Test procedures",
