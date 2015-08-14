@@ -4,6 +4,7 @@ File: genProcedures.groovy
 Description: 
 
 */
+import groovy.json.JsonOutput
 
 def appName  = "$[appName]"
 def appTech  = "$[appTech]"
@@ -34,6 +35,9 @@ project appName, {
 		step "Create Artifact Location",
 			command: "artifact groupId: \"$artifactGroup\", artifactKey: \"$artifactKey\"",
 			shell: "ectool evalDsl --dslFile {0}"
+
+		property '/jobs/$[/myJob]/artifacts',
+			value: "${artifactGroup}:${artifactKey}"
 			
 		step "Publish Artifact",
 			subproject: "/plugins/EC-Artifact/project",

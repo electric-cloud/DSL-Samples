@@ -95,13 +95,17 @@ project "Application Onboarding", {
 			command: new File(dslDir + "genCi.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
 			
+		step "Create cleaner procedure",
+			command: new File(dslDir + "clean.groovy").text,
+			shell: "ectool evalDsl --dslFile {0}"			
 
 	} // Procedure "Onboard new application flow"
-	
+	/*
 	procedure "Clean",{
 		formalParameter "refJobId", required: "true"
 		step "Remove all objects",
 			command: new File(dslDir + "clean.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
 	}
+	*/
 }
