@@ -27,7 +27,7 @@ project "$[/myProject]", {  // That is, the Onboarding project
 			shell: "ectool evalDsl --dslFile {0}"
 			
 		step "Remove this procedure",
-			command: 'ectool deleteProcedure "$[/myProject]" "$[/myProcedure]"'
+			command: 'ectool deleteProcedure "$[/myProject]" "CLEAN: $[appName]"'
 	}
 }
 
