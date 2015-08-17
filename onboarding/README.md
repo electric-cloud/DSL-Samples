@@ -23,5 +23,5 @@ This DSL file needs to be run from the Commander Server
 8. Once the procedure is completed, navigate to the pipeline from the tool tip over the green square job icon
 
 ## To Clean out objects created by onboarding produre
-- Run the 'CLEAN: <your project name>' procedure
+- Run the 'CLEAN: \<your project name\>' procedure
 
