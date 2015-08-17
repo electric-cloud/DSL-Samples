@@ -5,14 +5,13 @@ Examples of DSL code that produce Commander and Deploy models
 ## Tips and tricks
 
 <pre><code>
-// Storing and retrieving Groovy structures through EF properties
+// Storing and retrieving Groovy array through EF properties
 import groovy.json.JsonOutput
-def groovyObject = [a: "a val", b: "b val"]
-propValue = JsonOutput.toJson(groovyObject)
+def groovyArray = ["a", "b"]
+propValue = JsonOutput.toJson(groovyArray)
 // save propValue to an EF property
-$[EFprop].each { k, v ->
-	keyName = k
-	value = v
+$[EFprop].each { val ->
+	// use each element here as 'val'
 }
 </pre></code>
 
