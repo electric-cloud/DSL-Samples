@@ -15,7 +15,7 @@ def dslDir = "/vagrant/DSL-Samples/onboarding/"
 project "Application Onboarding", {
 
 	property "dslDir", value: dslDir
-	property "stages", value: '[dev: "Development", qa: "Testing", st: "Staging", pr: "Release"]'
+	//property "stages", value: '[dev: "Development", qa: "Testing", st: "Staging", pr: "Release"]'
 	
 	procedure "Onboard new application flow",{
 	

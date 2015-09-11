@@ -7,13 +7,15 @@ Description: Create pipeline
 
 def appName  = "$[appName]"
 def appTech  = "$[appTech]"
-def stages = $[/myProject/stages] // Literal string to create stage mapping of logical and actual stage names
-		
+//def stages = $ [/myProject/stages] // Literal string to create stage mapping of logical and actual stage names
+def stages = "$[stages]".split(",")
+
 project "Default", {
 	pipeline appName, {
 		
 		// Development State
-		stage stages.dev, {
+		//stage stages.dev, {
+		stage stages[0], { // Assume first stage is a development
 			task "Code Scan",
 				taskType: 'PROCEDURE',
 				subproject: appName,
@@ -57,7 +59,7 @@ project "Default", {
 				errorHandling: "ignore"
 
 		} // Dev Stage
-		
+/*		
 		stage stages.qa, {
 		
 			// Entry gate to QA
@@ -91,11 +93,12 @@ project "Default", {
 				taskType: 'PROCEDURE',
 				subproject: appName,
 				subprocedure: 'System Tests'
-				
 		} // Stage QA
-		
-		["st", "pr"].each { stg -> 
-			stage stages[stg], {
+*/				
+		stages.drop(1).each { stg -> // drop the dev
+		//["st", "pr"].each { stg -> 
+			//stage stages[stg], {
+			stage stg, {
 				// Entry gate to QA
 				task "Entry gate approval",
 					taskType: 'APPROVAL',

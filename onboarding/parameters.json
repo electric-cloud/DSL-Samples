@@ -3,37 +3,49 @@
     "name": "appName",
     "label": "Application Name",
     "description": "The name of the application to be on-boarded",
-    "defaultValue" : "My Application"
+    "defaultValue": "My Application"
   },
   {
     "name": "sourceLocation",
     "label": "Source Code Location",
     "description": "SCM location for CI",
-    "defaultValue" : "http://gitlab.mycompany.com/apps/myapp.git"
+    "defaultValue": "http://gitlab.mycompany.com/apps/myapp.git"
+  },
+  {
+    "name": "stages",
+    "label": "Stage names",
+    "description": "Comma-separated list of stages for pipeline",
+    "defaultValue": "Dev,QA,UAT,Staging,Prod"
+  },
+  {
+    "name": "tiers",
+    "label": "Tier names",
+    "description": "Comma-separated list of tiers for both environment and application models",
+    "defaultValue": "App,DB,Web"
   },
   {
     "name": "artifactGroup",
     "label": "Artifact Group",
     "description": "Artifact Group such as com.mycompany",
-    "defaultValue" : "com.mycompany"
+    "defaultValue": "com.mycompany"
   },
   {
     "name": "artifactKey",
     "label": "Artifact Key",
     "description": "Artifact Key such as myapp",
-    "defaultValue" : "myapp"
+    "defaultValue": "myapp"
   },
   {
     "name": "buildIp",
     "label": "Build Machine",
     "description": "Hostname or IP of build machine",
-    "defaultValue" : "flow"
+    "defaultValue": "flow"
   },
   {
     "name": "deployIp",
     "label": "Application Server",
     "description": "Hostname or IP of application server",
-    "defaultValue" : "flow"
+    "defaultValue": "flow"
   },
   {
     "name": "appTech",

@@ -10,7 +10,9 @@ def appName  = "$[appName]"
 def appTech  = "$[appTech]"
 def artifactGroup = "$[artifactGroup]"
 def artifactKey = "$[artifactKey]"
-def stages = $[/myProject/stages] // Literal string to create stage mapping of logical and actual stage names
+//def stages = $ [/myProject/stages] // Literal string to create stage mapping of logical and actual stage names
+def stages = "$[stages]".split(",")
+
 
 def envTier = "Wildfly"
 def appTier = "App Svr"
@@ -23,7 +25,8 @@ project "Default", {
 	// Create Environments, Tiers and Resources
 	def resources = []
 	def environments = []
-	stages.each { envShorthand, envName ->
+	//stages.each { envShorthand, envName ->
+	stages.each { envShorthand ->
 		env = "${envShorthand}-${appName}"
 		environments.push(env)
 		environment env, {
@@ -120,7 +123,8 @@ project "Default", {
 				applicationTierName: appTier
 		}
 		
-		stages.each { envShorthand, envName ->
+		//stages.each { envShorthand, envName ->
+		stages.each { envShorthand ->
 			tierMap tierMapName: "$appName-$envShorthand",
 				environmentProjectName: projectName, // Replace with projectName reference
 				environmentName: "${envShorthand}-${appName}",
