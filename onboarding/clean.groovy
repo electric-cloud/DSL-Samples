@@ -17,10 +17,14 @@ project "$[/myProject]", {  // That is, the Onboarding project
 					projectName: "Default"
 				deletePipeline pipelineName: "$[appName]",
 					projectName: "Default"
-					
+				
+				// Remove project from CI property list for admin
 				setProperty(propertyName: "/users/admin/ec_ci/ciProjects", value:
-				getProperty(propertyName: "/users/admin/ec_ci/ciProjects").value.minus("$[appName]") )
-
+				getProperty(propertyName: "/users/admin/ec_ci/ciProjects").value.minus("$[appName]\\n").minus("$[appName]") )
+				
+				setProperty(propertyName: "/users/admin/ec_ci/openProjects", value:
+				getProperty(propertyName: "/users/admin/ec_ci/openProjects").value.minus("$[appName]\\n").minus("$[appName]") )
+				
 				deleteProject projectName: "$[appName]"
 
 			""".stripIndent(),
