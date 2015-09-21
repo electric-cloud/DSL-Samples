@@ -18,11 +18,21 @@ project appName, {
 		
 		step "Get Sources"
 		
-		step "Compile",
+		step "Compile UNIX",
 			subproject: "/plugins/EC-FileOps/project",
 			subprocedure: "AddTextToFile",
 			actualParameter: [
 				Path: "installer.sh",
+				Content: (String) "echo installing $appName",
+				AddNewLine: "0",
+				Append: "0"
+			]
+			
+		step "Compile Windows",
+			subproject: "/plugins/EC-FileOps/project",
+			subprocedure: "AddTextToFile",
+			actualParameter: [
+				Path: "installer.bat",
 				Content: (String) "echo installing $appName",
 				AddNewLine: "0",
 				Append: "0"
@@ -45,7 +55,7 @@ project appName, {
 			actualParameter: [
 				artifactName: (String) artifactName_,
 				artifactVersionVersion: "1.0.0-" + '$' + "[/increment /myProject/buildIndex]",
-				includePatterns: "installer.sh",
+				includePatterns: "installer.*",
 				repositoryName: "Default"
 				//fromLocation:
 			]

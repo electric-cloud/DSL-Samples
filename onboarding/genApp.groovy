@@ -93,7 +93,6 @@ project "Default", {
 						subproject: '/plugins/EC-Core/project',
 						subprocedure: 'RunCommand',
 						actualParameter: [
-							shellToUse: 'sh',
 							commandToRun: 'sh $' + '[/myJob/retrievedArtifactVersions/$' + '[assignedResourceName]/$' + '[/myComponent/ec_content_details/artifactName]/cacheLocation]/installer.sh'
 							],
 						applicationName: null,
