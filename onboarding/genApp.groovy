@@ -95,7 +95,9 @@ project "Default", {
 						actualParameter: [
 							commandToRun: '$' + '[/javascript myResource.hostPlatform=="linux"?"sh ":""]' +
 							'\"' + // Quote entire command
-							'$' + '[/myJob/retrievedArtifactVersions/$' + '[assignedResourceName]/$' + '[/myComponent/ec_content_details/artifactName]/cacheLocation]/installer.' +
+							'$' + '[/myJob/retrievedArtifactVersions/$' + '[assignedResourceName]' + 
+							'$' + '[/javascript myResource.hostPlatform=="linux"?"/":"\\\\"]' + // Slash direction 
+							'$' + '[/myComponent/ec_content_details/artifactName]/cacheLocation]/installer.' +
 							'$' + '[/javascript myResource.hostPlatform=="linux"?"sh":"bat"]' + '\"'
 							],
 						applicationName: null,
