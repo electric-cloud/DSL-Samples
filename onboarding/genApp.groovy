@@ -93,6 +93,8 @@ project "Default", {
 						subproject: '/plugins/EC-Core/project',
 						subprocedure: 'RunCommand',
 						actualParameter: [
+							// Linux: sh "fullPathToFile/installer.sh"
+							// Windows: "fullPathToFile\installer.bat"
 							commandToRun: '$' + '[/javascript myResource.hostPlatform=="linux"?"sh ":""]' +
 							'\"' + // Quote entire command
 							'$' + '[/myJob/retrievedArtifactVersions/$' + '[assignedResourceName]/' + 
