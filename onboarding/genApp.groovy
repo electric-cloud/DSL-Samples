@@ -93,7 +93,9 @@ project "Default", {
 						subproject: '/plugins/EC-Core/project',
 						subprocedure: 'RunCommand',
 						actualParameter: [
-							commandToRun: 'sh $' + '[/myJob/retrievedArtifactVersions/$' + '[assignedResourceName]/$' + '[/myComponent/ec_content_details/artifactName]/cacheLocation]/installer.sh'
+							commandToRun: '$' + '[/javascript myResource.hostPlatform=="linux"?"sh ":""]' + '$' +
+							'[/myJob/retrievedArtifactVersions/$' + '[assignedResourceName]/$' + '[/myComponent/ec_content_details/artifactName]/cacheLocation]/installer.' +
+							'$' + '[/javascript myResource.hostPlatform=="linux"?"sh":"bat"]'
 							],
 						applicationName: null,
 						applicationTierName: null,
