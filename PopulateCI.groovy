@@ -28,6 +28,10 @@ def procedures = ["Stream1","Stream2","Stream3","Stream4"]
 	
 // Create new
 
+// Makes sure CI property sheets are present
+property "/myUser/ec_ci/ciProjects"
+property "/myUser/ec_ci/openProjects"
+
 project projName, {
 	description = ""
 	
