@@ -7,6 +7,7 @@ Description: Create release
 
 def releaseName = "$[release]"
 def applications = "$[applications]".split(",") // comma separated list
+def versions = "$[versions]".split(",") // comma separated list
 def stages = "$[stages]".split(",") // comma separated list
 def startDate = "$[plannedStartDate]"
 def endDate = "$[plannedEndDate]"
@@ -18,12 +19,12 @@ project "Default", {
 		plannedStartDate: startDate,
 		plannedEndDate: endDate,{
 			deployer "Main Applications",{
-				applications.each { app ->
+				applications.eachWithIndex { app, index ->
 					deployerApplication app,
 						applicationProjectName: projectName,
 						//orderIndex: ,
 						processName: "Deploy",
-						//snapshotName: , 
+						snapshotName: versions[index], 
 						releaseName: releaseName, {
 						
 							stages.each { st ->

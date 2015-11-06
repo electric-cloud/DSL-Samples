@@ -21,11 +21,18 @@ def release = [
     stages: ["UAT", "STG", "PROD"]
   ],
   apps: [
-	  [name: "OB - Account Statements", version: "2.4", artifactKey: "statements", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ],
-	  [name: "OB - Credit Card Accounts", version: "5.1", artifactKey: "cards", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"]],
-	  [name: "OB - Fund Transfer", version: "1.7", artifactKey: "fund", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ]
+	[name: "OB - Account Statements",
+		version: "2.4", artifactKey: "statements",
+		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ],
+	[name: "OB - Credit Card Accounts",
+		version: "5.1", artifactKey: "cards",
+		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"]],
+	[name: "OB - Fund Transfer",
+		version: "1.7", artifactKey: "fund",
+		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ]
 	]
 ]
+
 project projectName, {
 	procedure "Create Application",{
 		formalParameter "appName", required: "1"
@@ -33,6 +40,7 @@ project projectName, {
 		formalParameter "artifactGroup", required: "1"
 		formalParameter "artifactKey", required: "1"
 		formalParameter "envs", required: "1"
+		formalParameter "snapEnv", required: "1"
 		
 	step "Create Installer",
 	  subproject : "/plugins/EC-FileOps/project",
@@ -56,6 +64,11 @@ project projectName, {
 	step "Generate Application",
 			command: new File(dslDir + "createAppModel.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
+	step "Deploy to snapshot environment",
+		command: "ectool runProcess Default \"\$[appName]\" Deploy --environmentName \"\$[snapEnv]\""
+	step "Wait for deploy", command: "sleep 10"
+	step "Create snapshot",
+		command: "ectool createSnapshot Default \"\$[appName]\" \"\$[version]\" --environmentName \"\$[snapEnv]\""
 	}
 	
 	procedure "Create Pipeline",{
@@ -70,6 +83,7 @@ project projectName, {
 	procedure "Create Release",{
 		formalParameter "release", required: "1"
 		formalParameter "applications", required: "1"
+		formalParameter "versions", required: "1"
 		formalParameter "stages", required: "1"
 		formalParameter "plannedStartDate", required: "1", description: "yyyy-mm-dd format"
 		formalParameter "plannedEndDate", required: "1", description: "yyyy-mm-dd format"
@@ -89,10 +103,12 @@ project projectName, {
 				actualParameter : [
 					appName: app.name,  // required
 					version: app.version,
-					artifactGroup: artifactGroup,  // required
-					artifactKey: (String) app.artifactKey,  // required
-					envs: (String) app.envs.join(",")  // required
-				]
+					artifactGroup: artifactGroup,
+					artifactKey: (String) app.artifactKey,
+					envs: (String) app.envs.join(",")+","+app.snapEnv,
+					snapEnv: app.snapEnv
+				],
+				parallel: "false"
 		}
 
 		// Create Pipeline
@@ -110,6 +126,7 @@ project projectName, {
 			actualParameter : [
 				release: release.name,
 				applications: release.apps.name.join(","),
+				versions: release.apps.version.join(","),
 				stages: release.pipeline.stages.join(","),
 				plannedStartDate: release.plannedStartDate,
 				plannedEndDate: release.plannedEndDate
