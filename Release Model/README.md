@@ -13,6 +13,5 @@ ectool login <user> <password>
 ectool evalDsl --dslFile "assemble.groovy"
 ectool runProcedure "On line bank Release" --procedureName "Assemble"
 ```
-
-<li>Navigate to Releases in ElectricFlow.  You should see the new Release "Quarterly Online Banking Release"
+<li>Once this procedure has finished executing, you should see the new Release "Quarterly Online Banking Release"
 <ul>
