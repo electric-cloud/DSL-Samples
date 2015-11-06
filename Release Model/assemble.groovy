@@ -11,18 +11,18 @@ def dslDir = "/vagrant/DSL-Samples/Release Model/"
 
 def projectName = "On line bank Release"
 def artifactGroup = "com.mybank.apps"
-def applications = [
-  [name: "OB - Account Statements", artifactKey: "statements", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ],
-  [name: "OB - Credit Card Accounts", artifactKey: "cards", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"]],
-  [name: "OB - Fund Transfer", artifactKey: "fund", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ]
-]
+
 def release = [
   name: "Quarterly Online Banking Release",
   pipeline: [
     name: "Quarterly Online Banking Pipeline",
     stages: ["UAT", "STG", "PROD"]
   ],
-  apps: applications
+  apps: [
+	  [name: "OB - Account Statements", artifactKey: "statements", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ],
+	  [name: "OB - Credit Card Accounts", artifactKey: "cards", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"]],
+	  [name: "OB - Fund Transfer", artifactKey: "fund", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ]
+	]
 ]
 project projectName, {
 	procedure "Create Application",{
@@ -77,7 +77,7 @@ project projectName, {
 	
 	procedure "Assemble",{
 		// Create Application and Environment Models
-		applications.each { app ->
+		release.apps.each { app ->
 			step "Generate Application - $app.name",
 				subproject : projectName,
 				subprocedure : "Create Application",
