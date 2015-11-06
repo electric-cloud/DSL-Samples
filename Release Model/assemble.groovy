@@ -14,6 +14,8 @@ def artifactGroup = "com.mybank.apps"
 
 def release = [
   name: "Quarterly Online Banking Release",
+  plannedStartDate: "2015-12-05",
+  plannedEndDate: "2015-12-31",
   pipeline: [
     name: "Quarterly Online Banking Pipeline",
     stages: ["UAT", "STG", "PROD"]
@@ -68,6 +70,8 @@ project projectName, {
 		formalParameter "release", required: "1"
 		formalParameter "applications", required: "1"
 		formalParameter "stages", required: "1"
+		formalParameter "plannedStartDate", required: "1", description: "yyyy-mm-dd format"
+		formalParameter "plannedEndDate", required: "1", description: "yyyy-mm-dd format"
 		
 		step "Generate Release",
 			command: new File(dslDir + "createRelease.groovy").text,
@@ -104,7 +108,9 @@ project projectName, {
 			actualParameter : [
 				release: release.name,
 				applications: release.apps.name.join(","),
-				stages: release.pipeline.stages.join(",")
+				stages: release.pipeline.stages.join(","),
+				plannedStartDate: release.plannedStartDate,
+				plannedEndDate: release.plannedEndDate
 			]
 		
 	}

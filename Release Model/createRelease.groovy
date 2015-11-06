@@ -8,13 +8,15 @@ Description: Create release
 def releaseName = "$[release]"
 def applications = "$[applications]".split(",") // comma separated list
 def stages = "$[stages]".split(",") // comma separated list
+def startDate = "$[plannedStartDate]"
+def endDate = "$[plannedEndDate]"
 
 project "Default", {
 	release releaseName,
 		pipelineName: releaseName,
 		pipelineProjectName: projectName,
-		plannedStartDate: "2015-11-16",
-		plannedEndDate: "2015-12-01",{
+		plannedStartDate: startDate,
+		plannedEndDate: endDate,{
 			deployer "Main Applications",{
 				applications.each { app ->
 					deployerApplication app,
