@@ -21,14 +21,15 @@ def release = [
     stages: ["UAT", "STG", "PROD"]
   ],
   apps: [
-	  [name: "OB - Account Statements", artifactKey: "statements", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ],
-	  [name: "OB - Credit Card Accounts", artifactKey: "cards", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"]],
-	  [name: "OB - Fund Transfer", artifactKey: "fund", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ]
+	  [name: "OB - Account Statements", version: "2.4", artifactKey: "statements", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ],
+	  [name: "OB - Credit Card Accounts", version: "5.1", artifactKey: "cards", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"]],
+	  [name: "OB - Fund Transfer", version: "1.7", artifactKey: "fund", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ]
 	]
 ]
 project projectName, {
 	procedure "Create Application",{
 		formalParameter "appName", required: "1"
+		formalParameter "version", required: "1"	
 		formalParameter "artifactGroup", required: "1"
 		formalParameter "artifactKey", required: "1"
 		formalParameter "envs", required: "1"
@@ -47,7 +48,7 @@ project projectName, {
 	  subprocedure : "Publish",
 	  actualParameter : [
 		artifactName: "\$[artifactGroup]:\$[artifactKey]",  // required
-		artifactVersionVersion: "1.0-\$[/increment /server/ec_counters/jobCounter]",  // required
+		artifactVersionVersion: "\$[version]-\$[/increment /server/ec_counters/jobCounter]",  // required
 		fromLocation: ".",
 		includePatterns: "installer.sh",
 		repositoryName: "default",  // required
@@ -87,6 +88,7 @@ project projectName, {
 				subprocedure : "Create Application",
 				actualParameter : [
 					appName: app.name,  // required
+					version: app.version,
 					artifactGroup: artifactGroup,  // required
 					artifactKey: (String) app.artifactKey,  // required
 					envs: (String) app.envs.join(",")  // required
