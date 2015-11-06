@@ -34,6 +34,11 @@ def release = [
 ]
 
 project projectName, {
+
+	procedure "UpdateTicket"
+	procedure "SeleniumTests"
+
+
 	procedure "Create Application",{
 		formalParameter "appName", required: "1"
 		formalParameter "version", required: "1"	

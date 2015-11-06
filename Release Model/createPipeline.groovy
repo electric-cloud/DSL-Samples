@@ -10,11 +10,25 @@ def pipelineName = "$[release]"
 
 project "Default", {
 	pipeline pipelineName, {
-		stages.each { st ->
+		stages.eachWithIndex { st, index ->
 			stage st,{
 				task "Batch Deploy",
 					taskType: "DEPLOYER"
-				task "Entry gate approval",
+				task "Update ticket",
+					taskType: 'PROCEDURE',
+					subproject: "$[/myProject]",
+					subprocedure: "UpdateTicket"
+				task "Test Automation",
+					taskType: 'PROCEDURE',
+					subproject: "$[/myProject]",
+					subprocedure: "SeleniumTests"
+				if (index == 0) {
+					task "Test Automation"
+					task "Manual Validation",
+						taskType: "MANUAL",
+						approvers: "quincy"
+					}
+				if (index > 0) task "Entry gate approval",  // Don't create a gate for first stage
 					taskType: 'APPROVAL',
 					approver: ['admin'],
 					gateType: 'PRE',
