@@ -14,6 +14,11 @@ project "Default", {
 			stage st,{
 				task "Batch Deploy",
 					taskType: "DEPLOYER"
+				task "Entry gate approval",
+					taskType: 'APPROVAL',
+					approver: ['admin'],
+					gateType: 'PRE',
+					notificationTemplate: 'ec_default_pipeline_notification_template'
 			} // stage
 		} // Each stage
 	} // Pipeline
