@@ -1,6 +1,6 @@
 <H1>Application release sample</H1>
 
-<H2>Platform Requirements
+<H2>Platform Requirements</H2>
 <p>ElectricFlow 6.1
 
 <H2>Instructions</H2>
