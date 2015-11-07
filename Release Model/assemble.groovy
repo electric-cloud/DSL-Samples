@@ -7,6 +7,8 @@ ectool evalDsl --dslFile "assemble.groovy"
 
 */
 
+import groovy.json.JsonOutput
+
 def dslDir = "/vagrant/DSL-Samples/Release Model/"
 
 def projectName = "On line bank Release"
@@ -32,6 +34,9 @@ def release = [
 		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ]
 	]
 ]
+
+def applications = []
+def artifacts = []
 
 project projectName, {
 
@@ -100,8 +105,11 @@ project projectName, {
 	}
 	
 	procedure "Assemble",{
+
 		// Create Application and Environment Models
 		release.apps.each { app ->
+			applications.push(app.name)
+			artifacts.push("$artifactGroup:$app.artifactKey")
 			step "Generate Application - $app.name",
 				subproject : projectName,
 				subprocedure : "Create Application",
@@ -115,7 +123,7 @@ project projectName, {
 				],
 				parallel: "false"
 		}
-
+		
 		// Create Pipeline
 		step "Create Pipeline",
 			subproject : projectName,
@@ -124,7 +132,7 @@ project projectName, {
 				stages: release.pipeline.stages.join(","),
 				release: release.name
 			]
-			
+
 		step "Create Release",
 			subproject : projectName,
 			subprocedure : "Create Release",
@@ -136,7 +144,18 @@ project projectName, {
 				plannedStartDate: release.plannedStartDate,
 				plannedEndDate: release.plannedEndDate
 			]
-		
+
+		step "Write out properties",
+			command: """\
+				ectool setProperty /myJob/release \"$release.name\"
+				ectool setProperty /myJob/pipeline \"$release.name\"
+			""".stripIndent() +
+				"ectool setProperty /myJob/applications \'" + JsonOutput.toJson(applications) + "\'\n" +
+				"ectool setProperty /myJob/artifacts \'" + JsonOutput.toJson(artifacts) + "\'\n"
+
+		step "Create Clean Procedure",
+			command: new File(dslDir + "clean.groovy").text,
+			shell: "ectool evalDsl --dslFile {0}"
 	}
 	
 }

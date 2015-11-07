@@ -14,4 +14,5 @@ ectool evalDsl --dslFile "assemble.groovy"
 ectool runProcedure "On line bank Release" --procedureName "Assemble"
 ```
 <li>Once this procedure has finished executing, you should see the new Release "Quarterly Online Banking Release"
+<li>Also created is a procedure to remove all generated objects for this release model, use this to clean up
 <ul>
