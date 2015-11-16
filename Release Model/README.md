@@ -19,17 +19,5 @@ ectool runProcedure "On line bank Release" --procedureName "Assemble"
 <li>Also created is a procedure to remove all generated objects for this release model, use this to clean up</li>
 </ul>
 <H2>Instructions When using flow-demo</H2>
-<p>If you have flow-demo installed, use the following instructions</p>
-<ul>
-<li>Go to the flow-demo directory on your host machine, then</li>
-<ul/>
-```
-cd DSL-Samples
-git pull
-vagrant ssh
-sudo su - flow
-cd /vagrant/DSL-Samples/"Release Model"
-ectool login <user> <password>
-ectool evalDsl --dslFile "assemble.groovy"
-ectool runProcedure "On line bank Release" --procedureName "Assemble"
-```
+<p>If you have flow-demo installed, this procedure will automatically be created and run.</p>
+
