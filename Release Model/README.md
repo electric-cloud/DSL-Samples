@@ -19,5 +19,5 @@ ectool runProcedure "On line bank Release" --procedureName "Assemble"
 <li>Also created is a procedure to remove all generated objects for this release model, use this to clean up</li>
 </ul>
 <H2>Instructions When using flow-demo</H2>
-<p>If you have flow-demo installed, this procedure will automatically be created and run.</p>
+<p>If you have flow-demo installed, run procedure "On line bank Release"::"Assemble" from the UI</p>
 

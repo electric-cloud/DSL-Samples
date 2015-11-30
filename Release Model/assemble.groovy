@@ -160,4 +160,4 @@ project projectName, {
 	
 }
 
-transaction {runProcedure projectName: "On line bank Release", procedureName: "Assemble"} 
+//transaction {runProcedure projectName: "On line bank Release", procedureName: "Assemble"} 
