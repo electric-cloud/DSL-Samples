@@ -52,7 +52,7 @@ project projectName, {
 		formalParameter "envs", required: "1"
 		formalParameter "snapEnv", required: "1"
 		
-	step "Create Installer",
+	step "Create Installer sh",
 	  subproject : "/plugins/EC-FileOps/project",
 	  subprocedure : "AddTextToFile",
 	  actualParameter : [
@@ -61,14 +61,23 @@ project projectName, {
 		Content: "echo installing \$[appName]",  // required
 		Path: "installer.sh",  // required
 	  ]
-	step "Create Artifact",
+	step "Create Installer bat",
+	  subproject : "/plugins/EC-FileOps/project",
+	  subprocedure : "AddTextToFile",
+	  actualParameter : [
+		AddNewLine: "1",
+		Append: "1",
+		Content: "echo installing \$[appName]",  // required
+		Path: "installer.bat",  // required
+	  ]
+	  step "Create Artifact",
 	  subproject : "/plugins/EC-Artifact/project",
 	  subprocedure : "Publish",
 	  actualParameter : [
 		artifactName: "\$[artifactGroup]:\$[artifactKey]",  // required
 		artifactVersionVersion: "\$[version]-\$[/increment /server/ec_counters/jobCounter]",  // required
 		fromLocation: ".",
-		includePatterns: "installer.sh",
+		includePatterns: "installer.*",
 		repositoryName: "default",  // required
 	  ]
 	step "Generate Application",
