@@ -85,7 +85,7 @@ project projectName, {
 			shell: "ectool evalDsl --dslFile {0}"
 	step "Deploy to snapshot environment",
 		command: "ectool runProcess Default \"\$[appName]\" Deploy --environmentName \"\$[snapEnv]\""
-	step "Wait for deploy", command: "sleep 10"
+	step "Wait for deploy", command: "sleep 10", shell: "ec-perl"
 	step "Create snapshot",
 		command: "ectool createSnapshot Default \"\$[appName]\" \"\$[version]\" --environmentName \"\$[snapEnv]\""
 	}
@@ -132,7 +132,7 @@ project projectName, {
 				],
 				parallel: "false"
 		}
-		
+
 		// Create Pipeline
 		step "Create Pipeline",
 			subproject : projectName,
@@ -155,13 +155,19 @@ project projectName, {
 			]
 
 		step "Write out properties",
-			command: """\
-				ectool setProperty /myJob/release \"$release.name\"
+			command: "" +
+				'property "/jobs/$[/myJob]/release", value: ' + JsonOutput.toJson(release.name) + "\n" +
+				'property "/jobs/$[/myJob]/pipeline", value: ' + JsonOutput.toJson(release.name) + "\n" +
+				'property "/jobs/$[/myJob]/applications", value: \'' + JsonOutput.toJson(applications) + "\'\n" +
+				'property "/jobs/$[/myJob]/artifacts", value: \'' + JsonOutput.toJson(artifacts) + "\'\n",
+			shell: "ectool evalDsl --dslFile {0}"
+			
+/*				ectool setProperty /myJob/release \"$release.name\"
 				ectool setProperty /myJob/pipeline \"$release.name\"
-			""".stripIndent() +
+			""".stripIndent(),
 				"ectool setProperty /myJob/applications \'" + JsonOutput.toJson(applications) + "\'\n" +
 				"ectool setProperty /myJob/artifacts \'" + JsonOutput.toJson(artifacts) + "\'\n"
-
+*/
 		step "Create Clean Procedure",
 			command: new File(dslDir + "clean.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
