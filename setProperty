@@ -1,0 +1,14 @@
+/*
+  This example is on how to create a property if it does not already exist
+  The use case is for the initialization of a property and keep its value
+  if it already exists
+*/
+
+// Check for property /server/bar
+def resp=getProperty(propertyName:"bar", systemObjectName: "server")
+
+// Set value to 1 if it does not exist
+if (! resp) {
+  property(propertyName:"bar", systemObjectName: "server",value: 1)
+}
+ 
