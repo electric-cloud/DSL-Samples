@@ -46,7 +46,8 @@ project "Default", {
 			// Create artifact
 			artifact groupId: artifactGroup, artifactKey: artifactKey
 		
-			component componentName: artifactKey, pluginName: getPlugin(pluginName: "EC-Artifact").pluginName, {
+			//component componentName: artifactKey, pluginName: getPlugin(pluginName: "EC-Artifact").pluginName, {
+			component componentName: artifactKey, pluginKey: "EC-Artifact", {
 				ec_content_details.with { 
 					pluginProjectName = "EC-Artifact"
 					pluginProcedure = "Retrieve"
