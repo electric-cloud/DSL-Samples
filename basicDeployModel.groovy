@@ -77,8 +77,7 @@ project projectName, {
 				artifact groupId: artifactRoot, artifactKey: compName
 				//def artifactName = "com.ec.test:test"
 			
-				//component componentName: compName, pluginName: "EC-Artifact-1.0.9.76076", {
-				component componentName: compName, pluginName: getPlugin(pluginName: "EC-Artifact").pluginName, {
+				component componentName: compName, pluginKey: "EC-Artifact", {
 					ec_content_details.with { 
 						pluginProjectName = "EC-Artifact"
 						pluginProcedure = "Retrieve"
