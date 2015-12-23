@@ -1,6 +1,6 @@
 /*
 Format: Electric Flow DSL
-File: DeployModelConfigAdaptation.groovy
+File: basicDeployModel.groovy
 Description: Electric Flow Deploy model with configuration adaptation based on an environment property
 - Creates environment model (with resources all pointing to localhost by default)
 - Creates application model
@@ -8,7 +8,7 @@ Description: Electric Flow Deploy model with configuration adaptation based on a
 
 Set up Instructions
 -------------------
-ectool --format json evalDsl --dslFile DeployModelConfigAdaptation.groovy
+ectool --format json evalDsl --dslFile basicDeployModel.groovy
 
 Running Instructions
 --------------------
@@ -228,20 +228,14 @@ project "Deploy Utilities",{
 			use strict;
 			use ElectricCommander ();
 			$| = 1;
+			local $/;
 			my $ec = new ElectricCommander->new();
 			my $inputFile = $ec->getProperty("inputFile")->find("//value")->string_value;
-			#my $inputFile = $[inputFile]; # User has to provide quotes...
-			#$inputFile =~ s#\\\\#/#g;
 			unless(open INFILE, $inputFile) {
 				# Die with error message 
 				# if we can't open it.
 				die "\\nUnable to open $inputFile\\n";
 			}			
-			my $outputFile = $ec->getProperty("outputFile")->find("//value")->string_value;
-			$outputFile =~ s#\\\\#/#g;
-			open OUTFILE, '>'.$outputFile;	
-			
-			local $/;
 			print "Input file: ", $inputFile, "\\n";
 			my $inContent = <INFILE>;
 			print "Input Content______________________\\n";
@@ -249,6 +243,14 @@ project "Deploy Utilities",{
 			print "\\n\\n";
 			close INFILE;
 			
+			my $outputFile = $ec->getProperty("outputFile")->find("//value")->string_value;
+			$outputFile =~ s#\\\\#/#g;
+			unless(open INFILE, $outputFile) {
+				# Die with error message 
+				# if we can't open it.
+				die "\\nUnable to open $outputFile\\n";
+			}	
+			open OUTFILE, '>'.$outputFile;				
 			print "Output file: ",$outputFile,"\\n";
 			my $outContent = $ec->expandString($inContent)->find("//value")->string_value;
 			print "Output Content______________________\\n";
@@ -258,6 +260,7 @@ project "Deploy Utilities",{
 		shell = 'ec-perl'
 	  }
 	}
+
 	
 	procedure "Create template file",{
 		formalParameter 'fileName', required: 'true'
