@@ -245,12 +245,11 @@ project "Deploy Utilities",{
 			
 			my $outputFile = $ec->getProperty("outputFile")->find("//value")->string_value;
 			$outputFile =~ s#\\\\#/#g;
-			unless(open INFILE, $outputFile) {
+			unless(open OUTFILE, '>'.$outputFile) {
 				# Die with error message 
 				# if we can't open it.
 				die "\\nUnable to open $outputFile\\n";
 			}	
-			open OUTFILE, '>'.$outputFile;				
 			print "Output file: ",$outputFile,"\\n";
 			my $outContent = $ec->expandString($inContent)->find("//value")->string_value;
 			print "Output Content______________________\\n";
