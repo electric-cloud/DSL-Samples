@@ -95,7 +95,8 @@ project projectName, {
 		command: "ectool runProcess Default \"\$[appName]\" Deploy --environmentName \"\$[snapEnv]\""
 	step "Wait for deploy", command: "sleep 10", shell: "ec-perl"
 	step "Create snapshot",
-		command: "ectool createSnapshot Default \"\$[appName]\" \"\$[version]\" --environmentName \"\$[snapEnv]\""
+		command: "ectool createSnapshot Default \"\$[appName]\" \"\$[version]\" --environmentName \"\$[snapEnv]\"",
+			errorHandling: "ignore"
 	}
 	
 	procedure "Create Pipeline",{
