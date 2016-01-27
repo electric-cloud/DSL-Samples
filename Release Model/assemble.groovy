@@ -14,10 +14,18 @@ def dslDir = "/vagrant/DSL-Samples/Release Model/"
 def projectName = "On line bank Release"
 def artifactGroup = "com.mybank.apps"
 
+// print date in yyyy-mm-dd format
+def formatDate(d) {
+	year = d.year+1900
+	date = d.date
+	month = d.month+1
+	return "${year}-${month}-${date}"
+}
+
 def release = [
   name: "Quarterly Online Banking Release",
-  plannedStartDate: "2015-12-05",
-  plannedEndDate: "2015-12-31",
+  plannedStartDate: (String) formatDate(new Date()),
+  plannedEndDate: (String) formatDate(new Date()+14),
   pipeline: [
     name: "Quarterly Online Banking Pipeline",
     stages: ["UAT", "STG", "PROD"]
