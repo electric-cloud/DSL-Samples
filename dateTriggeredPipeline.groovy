@@ -62,11 +62,17 @@ project proj, {
 					'action="approve" ' +
 					'evidence="Promoted by job $[/myJob]" ' +
 					'flowRuntimeId="$[/myPipelineRuntime/flowRuntimeId]" '
+					
+		step "Create Link",
+			command: 'ectool setProperty "/myPipelineStageRuntime/ec_summary/schedule" ' + 
+			'--value \'<html><a href=" /commander/link/editSchedule/projects/' + 
+			projectName + 
+			'/schedules/$[/myPipelineRuntime]">View</a></html>\''
 	}
 	
 	pipeline pipe, description: "Two stage pipeline with entry gate to second stage, QA", {
-		formalParameter "date", required: "true", description: "Date format: yyyy-mm-dd"
-		formalParameter "time", required: "true", description: "Time format: hh:mm"
+		formalParameter "date", defaultValue: '$[/javascript var now = new Date();((now.getFullYear())+"-"+(now.getMonth()+1))+"-"+(now.getDate())]', description: "Date format: yyyy-mm-dd"
+		formalParameter "time", defaultValue: '$[/javascript var now = new Date();now.getHours()+":"+(now.getMinutes()+1)]', description: "Time format: hh:mm"
 		
 		stage "Dev", {
 			task "Create Schedule",
