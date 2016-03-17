@@ -73,7 +73,8 @@ project proj, {
 	
 	pipeline pipe, description: "Two stage pipeline with entry gate to second stage, QA", {
 		formalParameter "date", defaultValue: '$[/javascript var now = new Date();((now.getFullYear())+"-"+(now.getMonth()+1))+"-"+(now.getDate())]', description: "Date format: yyyy-mm-dd"
-		formalParameter "time", defaultValue: '$[/javascript var now = new Date();now.getHours()+":"+(now.getMinutes()+1)]', description: "Time format: hh:mm"
+		// Default value now + 1 min
+		formalParameter "time", defaultValue: '$[/javascript var now = new Date(Date.now()+60000);now.getHours()+":"+(now.getMinutes())]', description: "Time format: hh:mm"
 		
 		stage "Dev", {
 			task "Create Schedule",
