@@ -64,10 +64,11 @@ project proj, {
 					'flowRuntimeId="$[/myPipelineRuntime/flowRuntimeId]" '
 					
 		step "Create Link",
-			command: 'ectool setProperty "/myPipelineStageRuntime/ec_summary/schedule" ' + 
-			'--value \'<html><a href=" /commander/link/editSchedule/projects/' + 
-			projectName + 
-			'/schedules/$[/myPipelineRuntime]">View</a></html>\''
+			command: """\
+			ectool setProperty "/myPipelineStageRuntime/ec_summary/Schedule Time and Date" --value "\$[time]   \$[date]"
+			
+			ectool setProperty "/myPipelineStageRuntime/ec_summary/Schedule Definition" --value '<html><a href=" /commander/link/editSchedule/projects/$projectName/schedules/\$[/myPipelineRuntime]">View</a></html>'
+			""".stripIndent()
 	}
 	
 	pipeline pipe, description: "Two stage pipeline with entry gate to second stage, QA", {
