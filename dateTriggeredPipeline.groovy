@@ -65,16 +65,15 @@ project proj, {
 					
 		step "Create Link",
 			command: """\
-			ectool setProperty "/myPipelineStageRuntime/ec_summary/Schedule Time and Date" --value "\$[time]   \$[date]"
-			
-			ectool setProperty "/myPipelineStageRuntime/ec_summary/Schedule Definition" --value '<html><a href=" /commander/link/editSchedule/projects/$projectName/schedules/\$[/myPipelineRuntime]">View</a></html>'
+				ectool setProperty "/myPipelineStageRuntime/ec_summary/QA Schedule" --value '<html><pre>\$[date] - \$[time] UTC\n<a href=" /commander/link/editSchedule/projects/$projectName/schedules/\$[/myPipelineRuntime]">Definition</a></pre></html>'
 			""".stripIndent()
 	}
 	
 	pipeline pipe, description: "Two stage pipeline with entry gate to second stage, QA", {
 		formalParameter "date", defaultValue: '$[/javascript var now = new Date();((now.getFullYear())+"-"+(now.getMonth()+1))+"-"+(now.getDate())]', description: "Date format: yyyy-mm-dd"
-		// Default value now + 1 min
-		formalParameter "time", defaultValue: '$[/javascript var now = new Date(Date.now()+60000);now.getHours()+":"+(now.getMinutes())]', description: "Time format: hh:mm"
+		// Default value now + 30 sec
+		// Insert 0 in minutes and seconds if single digit
+		formalParameter "time", defaultValue: '$[/javascript var tt = new Date(Date.now()+30000);tt.getHours()+":"+(tt.getMinutes()).toString().replace(/^(\\d)$/, "0$1")+":"+(tt.getSeconds()).toString().replace(/^(\\d)$/, "0$1")]', description: "Time format: hh:mm:ss"
 		
 		stage "Dev", {
 			task "Create Schedule",
