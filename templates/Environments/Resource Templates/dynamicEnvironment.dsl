@@ -23,15 +23,26 @@
  // Valid values are: Amazon, OpenStack, and Azure
  def cloudProvider = 'Amazon' 
  
- // 4.1 (a) Set the following configurations for Amazon EC2 if cloudProvider is 'Amazon'
+ // 4. Whether the referenced plugin configurations 
+ // should be created or replaced if they already exists.
+ // Set this flag to false if the configurations already 
+ // exist and you do not want the script to replace them.
+ // This flag applies to both the cloud provider plugin 
+ // configuration and the configuration management plugin.
+ def createOrReplaceConfiguration = true
+ 
+ def cloudProviderPluginConfiguration = 'cpConfig'
+ def configMgmtPluginConfiguration    = 'cmConfig'
+ 
+ // 5.1 (a) Set the following configurations for Amazon EC2 if cloudProvider is 'Amazon'
  def amazonConfigurations = [
-    'config': 'ec2',
+    'config': cloudProviderPluginConfiguration,
     //TODO: EC2 CreateConfiguration parameters
   ]
 
- // 4.1 (b) Set the following provisioning parameters for Amazon EC2 if cloudProvider is 'Amazon'
+ // 5.1 (b) Set the following provisioning parameters for Amazon EC2 if cloudProvider is 'Amazon'
  def amazonParameters = [
-    'config': 'ec2',
+    'config': cloudProviderPluginConfiguration,
     'count': '1',
 	'group': 'security goes here',
     'image': 'ami-17b75453',
@@ -50,13 +61,13 @@
     'zone': 'us-west-1b',
   ]
   
-  // 4.2 (a) Set the following configurations for Azure if cloudProvider is 'Azure'
+  // 5.2 (a) Set the following configurations for Azure if cloudProvider is 'Azure'
   // TODO: Add Azure parameters for CreateConfiguration procedure
   def azureConfigurations = [:]
   
-  // 4.2 (b) Set the following provisioning parameters for Azure if cloudProvider is 'Azure'
+  // 5.2 (b) Set the following provisioning parameters for Azure if cloudProvider is 'Azure'
  def azureParameters = [
-    'connection_config': 'azure1',
+    'connection_config': cloudProviderPluginConfiguration,
     'region': 'East US',
     'resource_group_name': 'IIS_production1_servers',
     'vm_admin_password': 'admin',
@@ -64,18 +75,18 @@
     'vm_name': 'Prod_IIS',
   ]
 
-  // 4.3 (a) Set the following configurations for OpenStack if cloudProvider is 'OpenStack'
+  // 5.3 (a) Set the following configurations for OpenStack if cloudProvider is 'OpenStack'
   // TODO: Add open stack parameters for CreateConfiguration procedure
   
-  // 4.3 (b) Set the following provisioning parameters for OpenStack if cloudProvider is 'OpenStack'
+  // 5.3 (b) Set the following provisioning parameters for OpenStack if cloudProvider is 'OpenStack'
   // TODO: Add open stack parameters
   
   
- // 5. Set the configuration management tool to use for the resource template
+ // 6. Set the configuration management tool to use for the resource template
  // Valid values are: Chef, and Puppet
  def configMgmtProvider = 'Chef' 
  
- // 6. (a) Set the following parameters if the selected configuration management tool is 'Chef'
+ // 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
  def chefParameters = [
     additional_arguments : '',
     chef_client_path : '/usr/bin/chef-client',
@@ -85,7 +96,7 @@
     use_sudo : '1',
  ]
  
- // 6. (b) Set the following parameters if the selected configuration management tool is 'Puppet'
+ // 7.2 (b) Set the following parameters if the selected configuration management tool is 'Puppet'
  def puppetParameters = [
       'additional_options': null,
       'certname': null,
@@ -134,6 +145,19 @@
      throw IllegalArgumentException ("Invalid configuration management provider: $configMgmtProvider")
  }
 
+ // Create the plugin configurations if required
+ 
+ if (createOrReplaceConfiguration) {
+ 
+	// TODO: Handle Cloud provider plugin configuration
+	//1. Delete Configuration in case it exists
+	//2. Create the configuration
+	
+	// TODO: Handle Configuration management plugin configuration
+	//1. Delete Configuration in case it exists
+	//2. Create the configuration
+	
+ }
  
  // Resource template DSL
 def result 
