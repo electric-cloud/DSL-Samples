@@ -19,11 +19,7 @@
  // The project will be created if it does not exist.
  def projectName = 'Default'
  
- // 3. Set the cloud provider to use for the resource template
- // Valid values are: Amazon, OpenStack, and Azure
- def cloudProvider = 'Amazon' 
- 
- // 4. Whether the referenced plugin configurations 
+ // 3. Whether the referenced plugin configurations 
  // should be created or replaced if they already exists.
  // Set this flag to false if the configurations already 
  // exist and you do not want the script to replace them.
@@ -31,42 +27,17 @@
  // configuration and the configuration management plugin.
  def createOrReplaceConfiguration = true
  
- def cloudProviderPluginConfiguration = 'cpConfig'
- def configMgmtPluginConfiguration    = 'cmConfig'
+ def cloudProviderPluginConfiguration = 'azure'
+ def configMgmtPluginConfiguration    = 'chef'
  
- // 5.1 (a) Set the following configurations for Amazon EC2 if cloudProvider is 'Amazon'
- def amazonConfigurations = [
+ // 4 (a) Set the following configurations for Azure
+ def cloudProviderConfigurations = [
     'config': cloudProviderPluginConfiguration,
-    //TODO: EC2 CreateConfiguration parameters
+    //TODO: Azure CreateConfiguration parameters
   ]
 
- // 5.1 (b) Set the following provisioning parameters for Amazon EC2 if cloudProvider is 'Amazon'
- def amazonParameters = [
-    'config': cloudProviderPluginConfiguration,
-    'count': '1',
-	'group': 'security goes here',
-    'image': 'ami-17b75453',
-    'instanceInitiatedShutdownBehavior': '',
-    'instanceType': 'm1.small',
-    'keyname': 'ECPluginTest',
-    'privateIp': '',
-    'propResult': '',
-    'res_poolName': '',
-    'res_port': '',
-    'res_workspace': '',
-    'resource_zone': 'default',
-    'subnet_id': 'subnet-36142770',
-    'use_private_ip': '0',
-    'userData': '',
-    'zone': 'us-west-1b',
-  ]
-  
-  // 5.2 (a) Set the following configurations for Azure if cloudProvider is 'Azure'
-  // TODO: Add Azure parameters for CreateConfiguration procedure
-  def azureConfigurations = [:]
-  
-  // 5.2 (b) Set the following provisioning parameters for Azure if cloudProvider is 'Azure'
- def azureParameters = [
+ // 4 (b) Set the following provisioning parameters for Azure
+ def provisioningParameters = [
     'connection_config': cloudProviderPluginConfiguration,
     'region': 'East US',
     'resource_group_name': 'IIS_production1_servers',
@@ -74,77 +45,37 @@
     'vm_admin_user': 'admin',
     'vm_name': 'Prod_IIS',
   ]
-
-  // 5.3 (a) Set the following configurations for OpenStack if cloudProvider is 'OpenStack'
-  // TODO: Add open stack parameters for CreateConfiguration procedure
   
-  // 5.3 (b) Set the following provisioning parameters for OpenStack if cloudProvider is 'OpenStack'
-  // TODO: Add open stack parameters
-  
-  
- // 6. Set the configuration management tool to use for the resource template
- // Valid values are: Chef, and Puppet
- def configMgmtProvider = 'Chef' 
- 
- // 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
- def chefParameters = [
-    additional_arguments : '',
-    chef_client_path : '/usr/bin/chef-client',
-    config : 'testChef',
-    node_name : '',
-    run_list : 'tomcat, java',
-    use_sudo : '1',
- ]
- 
- // 7.2 (b) Set the following parameters if the selected configuration management tool is 'Puppet'
- def puppetParameters = [
-      'additional_options': null,
-      'certname': null,
-      'debug': '0',
+ // 5 Set the following configuration management parameters for Chef
+ def configMgmtParameters = [
+      // Puppet master IP or Hostname
       'master_host': '10.168.30.1',
       'masterport': null,
+	  // Path to the puppet agent binary on the provisioned VM
       'puppet_path': 'sudo /usr/bin/puppet',
+	  // Any additional options to pass to the puppet agent command
+	  'additional_options': null,
+      'cert_name': null,
+      'debug': '0',
  ]
+ 
 	
  // End of resource template parameters -----------------------------
  
  // Cloud provider plugin configuration
- def cloudProviders = [:]
- 
- cloudProviders['Amazon'] = [ 
-   name : 'EC-EC2',
-   procedureName : 'API_RunInstances',
-   parameters : amazonParameters
- ]
- 
- cloudProviders['Azure'] = [ 
+ def cloudProvider = [ 
    name : 'EC-Azure',
    procedureName : 'Create VM',
-   parameters : azureParameters
+   parameters : provisioningParameters,
+   configurations: cloudProviderConfigurations
  ]
  
- def configMgmtProviders = [:]
- 
- configMgmtProviders['Chef'] = [ 
-   name : 'EC-Chef',
-   procedureName : '_RegisterAndConvergeNode',
-   parameters : chefParameters
- ]
- 
- configMgmtProviders['Puppet'] = [ 
+ def configMgmtProvider = [ 
    name : 'EC-Puppet',
-   procedureName : 'Configure Agent',
-   parameters : puppetParameters
+   procedureName : 'ConfigureAgent',
+   parameters : configMgmtParameters,
  ]
  
- if (!cloudProvider || !cloudProviders[cloudProvider]) {
-     throw IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
- }
- 
- if (!configMgmtProvider || !configMgmtProviders[configMgmtProvider]) {
-     throw IllegalArgumentException ("Invalid configuration management provider: $configMgmtProvider")
- }
-
  // Create the plugin configurations if required
  
  if (createOrReplaceConfiguration) {
@@ -153,9 +84,7 @@
 	//1. Delete Configuration in case it exists
 	//2. Create the configuration
 	
-	// TODO: Handle Configuration management plugin configuration
-	//1. Delete Configuration in case it exists
-	//2. Create the configuration
+	//EC-Puppet does not have a configuration
 	
  }
  
@@ -165,17 +94,17 @@ def result
 project projectName, { 
   result = resourceTemplate resourceTemplateName, {
 
-    cloudProviderPluginKey = cloudProviders[cloudProvider].name
-    cloudProviderProcedure = cloudProviders[cloudProvider].procedureName
+    cloudProviderPluginKey = cloudProvider.name
+    cloudProviderProcedure = cloudProvider.procedureName
     cloudProviderProjectName = null
   
-    cloudProviderParameter = cloudProviders[cloudProvider].parameters
+    cloudProviderParameter = cloudProvider.parameters
   
-    cfgMgrPluginKey = configMgmtProviders[configMgmtProvider].name
-    cfgMgrProcedure = configMgmtProviders[configMgmtProvider].procedureName
+    cfgMgrPluginKey = configMgmtProvider.name
+    cfgMgrProcedure = configMgmtProvider.procedureName
     cfgMgrProjectName = null
   
-    cfgMgrParameter = configMgmtProviders[configMgmtProvider].parameters
+    cfgMgrParameter = configMgmtProvider.parameters
 
   }
 

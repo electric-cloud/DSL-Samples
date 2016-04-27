@@ -27,8 +27,8 @@
  // configuration and the configuration management plugin.
  def createOrReplaceConfiguration = true
  
- def cloudProviderPluginConfiguration = 'ec2Config'
- def configMgmtPluginConfiguration    = 'chefConfig'
+ def cloudProviderPluginConfiguration = 'ec2'
+ def configMgmtPluginConfiguration    = 'chef'
  
  // 4 (a) Set the following configurations for Amazon EC2
  def cloudProviderConfigurations = [
@@ -40,10 +40,10 @@
  def provisioningParameters = [
     'config': cloudProviderPluginConfiguration,
     'count': '1',
-	'group': 'security goes here',
+	'group': 'sg-1e7bcf7b',
     'image': 'ami-17b75453',
     'instanceInitiatedShutdownBehavior': '',
-    'instanceType': 'm1.small',
+    'instanceType': 't2.medium',
     'keyname': 'ECPluginTest',
     'privateIp': '',
     'propResult': '',
@@ -51,10 +51,10 @@
     'res_port': '',
     'res_workspace': '',
     'resource_zone': 'default',
-    'subnet_id': 'subnet-36142770',
-    'use_private_ip': '0',
+    'subnet_id': 'subnet-be3293db',
+    'use_private_ip': '1',
     'userData': '',
-    'zone': 'us-west-1b',
+    'zone': 'us-west-1c',
   ]
   
   // 5 (a) Set the following configurations for Chef
