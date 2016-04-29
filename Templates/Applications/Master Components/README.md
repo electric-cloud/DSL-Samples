@@ -8,7 +8,7 @@ DSL templates for creating master components for application components that can
   * JBoss           - **EC-JBoss**
   * IBM WebSphere   - **EC-WebSphere**
   * Microsoft IIS   - **EC-IIS7**
-  * Oracle Weblogic - **EC-Weblogic**  
+  * Oracle Weblogic - **EC-Weblogic**
   * Tomcat          - **EC-Tomcat**  
 
   2. The **EC-FileSysRepo** is assumed to be pre-installed on the **ElectricFlow** server.
