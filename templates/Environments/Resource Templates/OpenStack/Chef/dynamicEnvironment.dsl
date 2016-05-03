@@ -21,8 +21,8 @@
  
  // 3. Set the cloud provider to use for the resource template
  // Valid values are: Amazon, OpenStack, and Azure
- def cloudProvider = 'Amazon' 
- 
+ def cloudProvider = 'OpenStack' 
+
  // 4. Whether the referenced plugin configurations 
  // should be created or replaced if they already exists.
  // Set this flag to false if the configurations already 
@@ -33,7 +33,8 @@
  
  def cloudProviderPluginConfiguration = 'cpConfig'
  def configMgmtPluginConfiguration    = 'cmConfig'
- 
+
+
  // 5.1 (a) Set the following configurations for Amazon EC2 if cloudProvider is 'Amazon'
  def amazonConfigurations = [
     'config': cloudProviderPluginConfiguration,
@@ -77,24 +78,53 @@
 
   // 5.3 (a) Set the following configurations for OpenStack if cloudProvider is 'OpenStack'
   // TODO: Add open stack parameters for CreateConfiguration procedure
-  
+  def openStackConfigurations = [
+    'api_version': '2',
+    'blockstorage_api_version': '1',
+    'keystone_api_version': '2.0',
+    'image_api_version': '2',
+    'identity_service_url': 'https://identity.api.url',
+    'compute_service_url': 'https://compute.api.url',
+    'image_service_url': 'https://images_api_url',
+    'debug_level': '10',
+    'resource': 'local',
+    'tenant_id': '123456',
+    'blockstorage_service_url': 'https://blockstorage.api.url',
+    'config_name': cloudProviderPluginConfiguration,
+    'userName': 'admin',
+    'password': 'admin',
+  ];
   // 5.3 (b) Set the following provisioning parameters for OpenStack if cloudProvider is 'OpenStack'
   // TODO: Add open stack parameters
-  
+  def openStackParameters = [
+    'connection_config': cloudProviderPluginConfiguration,
+    //    'projectName': 'Default',
+    'keyPairName': 'keypair1',
+    'image': 'image_id_for_openstack',
+    'flavor': '100',
+    'quantity': '2',
+  ];
   
  // 6. Set the configuration management tool to use for the resource template
  // Valid values are: Chef, and Puppet
  def configMgmtProvider = 'Chef' 
  
  // 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
+ def chefConfigurations = [
+   'config_name': configMgmtPluginConfiguration,
+   'userName': 'admin',
+   'password': 'admin',
+   'desc': 'Chef DSL configuration',
+   'server': 'chef_server'
+ ];
  def chefParameters = [
     additional_arguments : '',
     chef_client_path : '/usr/bin/chef-client',
-    config : 'testChef',
+    config : configMgmtPluginConfiguration,
     node_name : '',
     run_list : 'tomcat, java',
     use_sudo : '1',
- ]
+ ];
  
  // 7.2 (b) Set the following parameters if the selected configuration management tool is 'Puppet'
  def puppetParameters = [
@@ -115,14 +145,18 @@
    name : 'EC-EC2',
    procedureName : 'API_RunInstances',
    parameters : amazonParameters
- ]
- 
+ ];
  cloudProviders['Azure'] = [ 
    name : 'EC-Azure',
    procedureName : 'Create VM',
    parameters : azureParameters
- ]
- 
+ ];
+ cloudProviders['OpenStack'] = [
+   name: 'EC-OpenStack',
+   procedureName: '_DeployDE',
+   parameters: openStackParameters
+ ];
+     
  def configMgmtProviders = [:]
  
  configMgmtProviders['Chef'] = [ 
@@ -138,27 +172,272 @@
  ]
  
  if (!cloudProvider || !cloudProviders[cloudProvider]) {
-     throw IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
+     throw new IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
  }
  
  if (!configMgmtProvider || !configMgmtProviders[configMgmtProvider]) {
-     throw IllegalArgumentException ("Invalid configuration management provider: $configMgmtProvider")
+     throw new IllegalArgumentException ("Invalid configuration management provider: $configMgmtProvider")
  }
+
+
+// Service functions section
+
+def createConfigAzure(P) {
+    if (!P.config_name) {
+        throw new IllegalArgumentException("config_name argument is required");
+    }
+    if (!P.userName || !P.password) {
+        throw new IllegalArgumentException("userName and password arguments are required");
+    }
+    
+    def MandatoryParams = [
+        'debug_level',
+        'resource_pool',
+        'attempt',
+        'description',
+    ];
+    Params = [:];
+    MandatoryParams.each {
+        def elem = P.get(it);
+        if (!elem) {
+            throw new IllegalArgumentException("Parameter $it is mandatory.");
+        }
+        Params.put(it, P.get(it));
+    }
+
+    createConfig([
+                 pluginName: 'EC-Azure',
+                 pluginProperty: 'azure_cfgs',
+                 config_name: P.config_name,
+                 config_name_field: 'config_name',
+                 credential: [
+                     userName: P.userName,
+                     password: P.password,
+                 ],
+                 configParams: Params
+                 ]);
+    
+    
+}
+def createConfigEC2(P) {
+    if (!P.config_name) {
+        throw new IllegalArgumentException("config_name argument is required");
+    }
+    if (!P.userName || !P.password) {
+        throw new IllegalArgumentException("userName and password arguments are required");
+    }
+    def MandatoryParams = [
+        'debug',
+        'desc',
+        'resource_pool',
+        'service_url',
+        'workspace',
+        'attempt',
+    ];
+    Params = [:];
+    MandatoryParams.each {
+        def elem = P.get(it);
+        if (!elem) {
+            throw new IllegalArgumentException("Parameter $it is mandatory.");
+        }
+        Params.put(it, P.get(it));
+    }
+    
+    createConfig([
+                 pluginName: 'EC-EC2',
+                 pluginProperty: 'ec2_cfgs',
+                 config_name: P.config_name,
+                 credential: [
+                     userName: P.userName,
+                     password: P.password,
+                 ],
+                 configParams: Params
+                 ]);
+}
+
+
+def createConfigOpenStack(P) {
+    if (!P.config_name) {
+        throw new IllegalArgumentException("config_name argument is required");
+    }
+    if (!P.userName || !P.password) {
+        throw new IllegalArgumentException("userName and password arguments are required");
+    }
+    def MandatoryParams = [
+        'api_version',
+        'blockstorage_api_version',
+        'blockstorage_service_url',
+        'compute_service_url',
+        'debug_level',
+        'identity_service_url',
+        'image_api_version',
+        'image_service_url',
+        'keystone_api_version',
+        //        'orchestration_service_url',
+        'resource',
+        'tenant_id'
+    ];
+
+    Params = [:];
+    if (P.orchestration_service_url) {
+        Params.orchestration_service_url = P.orchestration_service_url;
+    }
+    else {
+        Params.orchestration_service_url = '';
+    }
+    MandatoryParams.each {
+        def elem = P.get(it);
+        if (!elem) {
+            throw new IllegalArgumentException("Parameter $it is mandatory.");
+        }
+        Params.put(it, P.get(it));
+    }
+    createConfig([
+                 pluginName: 'EC-OpenStack',
+                 pluginProperty: 'openstack_cfgs',
+                 config_name: P.config_name,
+                 credential: [
+                     userName: P.userName,
+                     password: P.password,
+                 ],
+                 configParams: Params
+                 ]);
+}
+def createConfigChef(P) {
+    if (!P.config_name) {
+        throw new IllegalArgumentException("config_name argument is required");
+    }
+    def Params = [:];
+    if (P.desc) {
+        Params.desc = P.desc;
+    }
+    if (P.server) {
+        Params.server = P.server;
+    }
+
+    def Cred = [:];
+    if (P.userName) {
+        Cred.userName = P.userName;
+    }
+    if (P.password) {
+        Cred.password = P.password;
+    }
+
+    createConfig([
+                 config_name: P.config_name,
+                 pluginName: 'EC-Chef',
+                 pluginProperty: 'chef_cfgs',
+                 configParams: Params,
+                 credential: Cred
+                 ]);
+}
+
+def createConfig(P) {
+    if (!P.pluginName) {
+        throw new IllegalArgumentException("pluginName argument is required");
+    }
+    if (!P.pluginProperty) {
+        throw new IllegalArgumentException("pluginProperty argument is required");
+    }
+    if (!P.config_name) {
+        if (P.config) {
+            P.config_name = P.config;
+        }
+        else {
+            throw new IllegalArgumentException("config_name argument is required");
+        }
+    }
+    if (!P.configParams) {
+        throw new IllegalArgumentException("configParams argument is required");
+    }
+
+    if (P.config_name_field) {
+        P.configParams.put(P.config_name_field, P.config_name)
+    }
+    else {
+        P.configParams.config = P.config_name;
+    }
+    
+    def projectName = getPlugin([pluginName: P.pluginName]).projectName;
+    if (P.credential) {
+        Cred = new RuntimeCredentialImpl()
+		Cred.name = P.config_name
+		Cred.userName = P.credential.userName
+		Cred.password = P.credential.password
+        P.configParams.credential = P.config_name
+    }
+    def propertyPath = '/projects/' + projectName + '/' + P.pluginProperty;
+    def prop = getProperty([propertyName: propertyPath]);
+    // Let's get config
+    propertyPath = propertyPath + '/' + P.config_name;
+
+    if (!getProperty([propertyName: propertyPath])) {
+        resp = runProcedure([
+                            projectName: projectName,
+                            procedureName: 'CreateConfiguration',
+                            actualParameter: P.configParams,
+                            
+                            credential: [Cred]
+                            
+                            ]);
+        // Now let's grab the jobId launched to run the procedure
+        def id=resp.jobId
+        // Let's wait for it to finish
+        
+        def String status=''
+        while(status != "completed") {
+            // We need the polling in a different transaction started after
+            //    the runProcedure one.
+            transaction{
+                status=getProperty(propertyName: 'status', jobId: id).value;
+            }
+            sleep (1000)
+        }
+        def String outcome=getProperty(propertyName: 'outcome', jobId: id).value;
+                
+    }
+    else {        
+        credential([
+                   projectName: projectName,
+                   userName: P.credential.userName,
+                   password: P.credential.password,
+                   credentialName: P.config_name
+                   ]);
+        P.configParams.each {
+            key, val -> setProperty([propertyName: propertyPath + '/' + key, value: val]);
+        }
+    }
+    return 1;
+}
 
  // Create the plugin configurations if required
  
  if (createOrReplaceConfiguration) {
- 
+     if (configMgmtProvider == 'Chef') {
+         createConfigChef(chefConfigurations);
+     }
 	// TODO: Handle Cloud provider plugin configuration
 	//1. Delete Configuration in case it exists
 	//2. Create the configuration
-	
+     def cloudProviderPlugin
+     if (cloudProvider == 'Amazon') {
+         cloudProvidePlugin = 'EC-EC2';
+     }
+     else if (cloudProvider == 'OpenStack') {
+         cloudProviderPlugin = 'EC-OpenStack';
+         createConfigOpenStack(openStackConfigurations);
+     }
+     else if (cloudProvider == 'Azure') {
+         cloudProviderPlugin = 'EC-Azure';
+     }
+     else {
+         throw new IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
+     }
 	// TODO: Handle Configuration management plugin configuration
 	//1. Delete Configuration in case it exists
 	//2. Create the configuration
 	
  }
- 
  // Resource template DSL
 def result 
 
