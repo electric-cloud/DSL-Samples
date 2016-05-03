@@ -21,9 +21,3 @@ DSL templates for creating master components for application components that can
  `ectool evalDsl --dslFile <file-path>`
  
 3. You should now have the Master Component created or updated in **ElectricFlow** under **Applications -> Master Components** that can be used to create applications for deployment. 
-
-
-
-
-
-
