@@ -1,266 +1,136 @@
 /*
  * DSL for a master component for a WAR deployment on Tomcat
  */
- 
- // ------------------------------------------------------
- // Parameters used by the master component DSL
- // Edit these parameter values based on your requirements
- 
- def masterComponentName = 'PROVIDE MASTER COMPONENT NAME HERE'
- def projectName = 'Default'
- 
- // End of master component parameters -------------------
- 
- 
+
+/* ------------------------------------------------------
+ Parameters used by the master component DSL
+ Edit these parameter values based on your requirements
+ */
+
+// Name of Master Component for Tomcat AS
+def masterComponentName = 'Tomcat AS Deployment and Undeployment Procedures'
+
+// Project name where component will be created
+def projectName = 'Default'
+
+// End of master component parameters
+
+
 def result
-project projectName, { 
 
-result = component masterComponentName, pluginName: null, {
-  applicationName = null
-  pluginKey = 'EC-FileSysRepo'
-  reference = '0'
-  sourceComponentName = null
-  sourceProjectName = null
+project projectName, {
 
-  process 'Deploy', {
-    applicationName = null
-    processType = 'DEPLOY'
-    
-    timeLimitUnits = null
-    workspaceName = null
+	result = component masterComponentName, pluginName: null, {
+		description = 'This master component contains steps for deployment and undeployment of J2EE applications in Tomcat application server.'
+		pluginKey = 'EC-FileSysRepo'
+		reference = '0'
 
-    processStep 'get app files', {
-      applicationTierName = null
-      dependencyJoinType = null
-      errorHandling = 'failProcedure'
-      instruction = null
-      notificationTemplate = null
-      processStepType = 'component'
-      
-      rollbackSnapshot = null
-      rollbackType = null
-      rollbackUndeployProcess = null
-      smartRollback = '1'
-      subcomponent = null
-      subcomponentApplicationName = null
-      subcomponentProcess = null
-      subprocedure = 'Retrieve File Artifact'
-      subproject = '/plugins/EC-FileSysRepo/project'
-      timeLimitUnits = null
-      workspaceName = null
-      actualParameter 'artifact', '$[/myComponent/ec_content_details/artifact]'
-      actualParameter 'directory', '$[/myComponent/ec_content_details/directory]'
-      actualParameter 'source', '$[/myComponent/ec_content_details/source]'
-      actualParameter 'version', '$[/myJob/ec_jpetstore-mysql.war master-version]'
-    }
+		formalParameter 'Artifact Name', defaultValue: 'jpetstore-mysql.war', {
+			expansionDeferred = '0'
+			label = 'Artifact Name'
+			orderIndex = '1'
+			required = '1'
+			type = 'entry'
+		}
 
-    processStep 'unzip war', {
-      applicationTierName = null
-      dependencyJoinType = null
-      errorHandling = 'failProcedure'
-      instruction = null
-      notificationTemplate = null
-      processStepType = 'plugin'
-      
-      rollbackSnapshot = null
-      rollbackType = null
-      rollbackUndeployProcess = null
-      smartRollback = '1'
-      subcomponent = null
-      subcomponentApplicationName = null
-      subcomponentProcess = null
-      subprocedure = 'Unzip File'
-      subproject = '/plugins/EC-FileOps/project'
-      timeLimitUnits = null
-      workspaceName = null
-      actualParameter 'destinationDir', './jpetstore-mysql'
-      actualParameter 'zipFile', 'jpetstore-mysql.war'
-    }
+		formalParameter 'Source Directory', defaultValue: null, {
+			description = 'Directory from which to retrieve artifact'
+			expansionDeferred = '0'
+			label = 'Source Directory'
+			orderIndex = '2'
+			required = '1'
+			type = 'entry'
+		}
 
-    processStep 'copy to webapps', {
-      applicationTierName = null
-      dependencyJoinType = null
-      errorHandling = 'failProcedure'
-      instruction = null
-      notificationTemplate = null
-      processStepType = 'command'
-      
-      rollbackSnapshot = null
-      rollbackType = null
-      rollbackUndeployProcess = null
-      smartRollback = '1'
-      subcomponent = null
-      subcomponentApplicationName = null
-      subcomponentProcess = null
-      subprocedure = 'RunCommand'
-      subproject = '/plugins/EC-Core/project'
-      timeLimitUnits = null
-      workspaceName = null
-      actualParameter 'commandToRun', '''destination_folder=$[/myEnvironment/artifactLocation]
+		formalParameter 'Tomcat Config', defaultValue: 'tomcatConfig', {
+			description = 'Configuration name of ElectricFlow Tomcat plugin'
+			expansionDeferred = '0'
+			label = 'Tomcat Configuration Name'
+			orderIndex = '3'
+			required = '1'
+			type = 'entry'
+		}
 
-cp -r jpetstore-mysql $destination_folder/'''
-      actualParameter 'shellToUse', 'sh'
-    }
+		formalParameter 'MySQL Connection', defaultValue: 'jdbc:mysql://localhost:3306/database?user=mysql_user&password=mysql_password', {
+			description = 'JDBC URL of MySQL database'
+			expansionDeferred = '0'
+			label = 'MySQL Connection String'
+			orderIndex = '4'
+			required = '1'
+			type = 'entry'
+		}
 
-    processStep 'update jdbc properties', {
-      applicationTierName = null
-      dependencyJoinType = null
-      errorHandling = 'failProcedure'
-      instruction = null
-      notificationTemplate = null
-      processStepType = 'command'
-      
-      rollbackSnapshot = null
-      rollbackType = null
-      rollbackUndeployProcess = null
-      smartRollback = '1'
-      subcomponent = null
-      subcomponentApplicationName = null
-      subcomponentProcess = null
-      subprocedure = 'RunCommand'
-      subproject = '/plugins/EC-Core/project'
-      timeLimitUnits = null
-      workspaceName = null
-      actualParameter 'commandToRun', '''destination_folder=$[/myEnvironment/artifactLocation]
+		process 'Deploy', {
+			processType = 'DEPLOY'
 
-db_host=$[/myEnvironment/db_host]
-db_user=$[/myEnvironment/db_user]
-db_password=$[/myEnvironment/db_password]
-db_name=$[/myEnvironment/db_name]
+			processStep 'get app files', {
+				errorHandling = 'failProcedure'
+				processStepType = 'component'
+				subprocedure = 'Retrieve File Artifact'
+				subproject = '/plugins/EC-FileSysRepo/project'
+				actualParameter 'artifact', '$[/myComponent/ec_content_details/artifact]'
+				actualParameter 'directory', '$[/myComponent/ec_content_details/directory]'
+				actualParameter 'source', '$[/myComponent/ec_content_details/source]'
+				actualParameter 'version', "\$[/myJob/ec_${masterComponentName}-version]"
+			}
 
-echo "jdbc.driverClassName=com.mysql.jdbc.Driver
-jdbc.url=jdbc:mysql://$db_host/$db_name
-jdbc.username=$db_user
-jdbc.password=$db_password" > $destination_folder/jpetstore-mysql/WEB-INF/jdbc.properties
+			processStep 'update jdbc properties', {
+				errorHandling = 'failProcedure'
+				processStepType = 'command'
+				subprocedure = 'RunCommand'
+				subproject = '/plugins/EC-Core/project'
+				actualParameter 'commandToRun', '''
+	    cd "$[/myComponent/ec_content_details/directory]"
+	  	mkdir WEB-INF
+	  	echo "jdbc.driverClassName=com.mysql.jdbc.Driver\njdbc.url=$[MySQL Connection]" > WEB-INF/jdbc.properties
+	    jar uf $[Artifact Name] WEB-INF/jdbc.properties
+	  '''
+				actualParameter 'shellToUse', 'sh'
+			}
 
-cd $destination_folder/jpetstore-mysql
-jar cvf $destination_folder/jpetstore-mysql.war .'''
-      actualParameter 'shellToUse', 'sh'
-    }
+			processStep 'Deploy', {
+				errorHandling = 'failProcedure'
+				processStepType = 'plugin'
+				subprocedure = 'DeployApp'
+				subproject = '/plugins/EC-Tomcat/project'
+				actualParameter 'applicationconfigfilepath', ''
+				actualParameter 'apppath', '$[Artifact Name]".slice(0, -4)]'
+				actualParameter 'serverconfigname', '$[Tomcat Config]'
+				actualParameter 'updateapp', '0'
+				actualParameter 'warfile', '$[Artifact Name]'
+			}
 
-    processStep 'Deploy', {
-      applicationTierName = null
-      dependencyJoinType = null
-      errorHandling = 'failProcedure'
-      instruction = null
-      notificationTemplate = null
-      processStepType = 'plugin'
-      
-      rollbackSnapshot = null
-      rollbackType = null
-      rollbackUndeployProcess = null
-      smartRollback = '1'
-      subcomponent = null
-      subcomponentApplicationName = null
-      subcomponentProcess = null
-      subprocedure = 'DeployApp'
-      subproject = '/plugins/EC-Tomcat/project'
-      timeLimitUnits = null
-      workspaceName = null
-      actualParameter 'appname', ''
-      actualParameter 'assignallservergroups', '0'
-      actualParameter 'assignservergroups', ''
-      actualParameter 'force', '0'
-      actualParameter 'runtimename', ''
-      actualParameter 'scriptphysicalpath', '$[/myEnvironment/wildfly9_home]/bin/jboss-cli.sh'
-      actualParameter 'serverconfig', 'jbossConfig'
-      actualParameter 'warphysicalpath', '$[/myEnvironment/artifactLocation]/jpetstore-mysql.war'
-    }
+			processDependency 'get app files', targetProcessStepName: 'update jdbc properties', { branchType = 'ALWAYS' }
 
-    processDependency 'get app files', targetProcessStepName: 'unzip war', {
-      branchCondition = null
-      branchConditionName = null
-      branchConditionType = null
-      branchType = 'ALWAYS'
-    }
+			processDependency 'update jdbc properties', targetProcessStepName: 'Deploy', { branchType = 'ALWAYS' }
+		}
 
-    processDependency 'unzip war', targetProcessStepName: 'copy to webapps', {
-      branchCondition = null
-      branchConditionName = null
-      branchConditionType = null
-      branchType = 'ALWAYS'
-    }
+		process 'Undeploy', {
+			processType = 'UNDEPLOY'
 
-    processDependency 'copy to webapps', targetProcessStepName: 'update jdbc properties', {
-      branchCondition = null
-      branchConditionName = null
-      branchConditionType = null
-      branchType = 'ALWAYS'
-    }
+			processStep 'Undeploy', {
+				errorHandling = 'failProcedure'
+				processStepType = 'plugin'
+				subprocedure = 'UndeployApp'
+				subproject = '/plugins/EC-Tomcat/project'
+				actualParameter 'apppath', '$[Artifact Name]".slice(0, -4)]'
+				actualParameter 'configname', '$[Tomcat Config]'
+			}
+		}
 
-    processDependency 'update jdbc properties', targetProcessStepName: 'Deploy', {
-      branchCondition = null
-      branchConditionName = null
-      branchConditionType = null
-      branchType = 'ALWAYS'
-    }
-  }
+		// Custom properties
 
-  process 'Undeploy', {
-    applicationName = null
-    processType = 'UNDEPLOY'
-    
-    timeLimitUnits = null
-    workspaceName = null
+		property 'ec_content_details', {
 
-    processStep 'Undeploy', {
-      applicationTierName = null
-      dependencyJoinType = null
-      errorHandling = 'failProcedure'
-      instruction = null
-      notificationTemplate = null
-      processStepType = 'plugin'
-      
-      rollbackSnapshot = null
-      rollbackType = null
-      rollbackUndeployProcess = null
-      smartRollback = '1'
-      subcomponent = null
-      subcomponentApplicationName = null
-      subcomponentProcess = null
-      subprocedure = 'UndeployApp'
-      subproject = '/plugins/EC-Tomcat/project'
-      timeLimitUnits = null
-      workspaceName = null
-      actualParameter 'allrelevantservergroups', '0'
-      actualParameter 'appname', 'jpetstore-mysql.war'
-      actualParameter 'keepcontent', '0'
-      actualParameter 'scriptphysicalpath', '$[/myEnvironment/tomcat_home]/bin/catalina.sh'
-      actualParameter 'serverconfig', 'jbossConfig'
-      actualParameter 'servergroups', ''
-    }
-
-    processStep 'delete files', {
-      applicationTierName = null
-      dependencyJoinType = null
-      errorHandling = 'failProcedure'
-      instruction = null
-      notificationTemplate = null
-      processStepType = 'command'
-      
-      rollbackSnapshot = null
-      rollbackType = null
-      rollbackUndeployProcess = null
-      smartRollback = '1'
-      subcomponent = null
-      subcomponentApplicationName = null
-      subcomponentProcess = null
-      subprocedure = 'RunCommand'
-      subproject = '/plugins/EC-Core/project'
-      timeLimitUnits = null
-      workspaceName = null
-      actualParameter 'commandToRun', 'echo "remove file"'
-      actualParameter 'shellToUse', 'sh'
-    }
-
-    processDependency 'Undeploy', targetProcessStepName: 'delete files', {
-      branchCondition = null
-      branchConditionName = null
-      branchConditionType = null
-      branchType = 'ALWAYS'
-    }
-  }
-}
+			// Custom properties
+			artifact = '$[Artifact Name]'
+			directory = ''
+			pluginProcedure = 'Retrieve File Artifact'
+			pluginProjectName = 'EC-FileSysRepo'
+			source = '$[Source Directory]'
+			version = ''
+		}
+	}
 }
 
 // return the master component in the evalDsl response

@@ -13,6 +13,8 @@ DSL templates for creating master components for application components that can
   
   2. The **EC-FileSysRepo** is assumed to be pre-installed on the **ElectricFlow** server.
   
+  3. Repository for **EC-FileSysRepo** plugin should contain WAR file, that will be deployed to Java application servers (**JBoss**, **WebLogic** or **WebSphere**).
+
 ## Instructions ##
 
 1. Edit the template file for your choosen application server replacing the parameter values with the desired values.
