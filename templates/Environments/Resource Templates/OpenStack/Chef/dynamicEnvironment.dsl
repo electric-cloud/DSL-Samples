@@ -21,7 +21,10 @@
  
  // 3. Set the cloud provider to use for the resource template
  // Valid values are: Amazon, OpenStack, and Azure
- def cloudProvider = 'OpenStack' 
+
+ // def cloudProvider = 'Azure';
+ def cloudProvider = 'Amazon';
+ //  def cloudProvider = 'OpenStack';
 
  // 4. Whether the referenced plugin configurations 
  // should be created or replaced if they already exists.
@@ -64,7 +67,15 @@
   
   // 5.2 (a) Set the following configurations for Azure if cloudProvider is 'Azure'
   // TODO: Add Azure parameters for CreateConfiguration procedure
-  def azureConfigurations = [:]
+  def azureConfigurations = [
+      'config_name': cloudProviderPluginConfiguration,
+      'debug_level': '8',
+      'attempt': '1',
+      'description': 'Enter your description here',
+      'userName': 'admin',
+      'password': 'admin',
+      'resource_pool': 'local',
+  ]
   
   // 5.2 (b) Set the following provisioning parameters for Azure if cloudProvider is 'Azure'
  def azureParameters = [
@@ -107,7 +118,8 @@
   
  // 6. Set the configuration management tool to use for the resource template
  // Valid values are: Chef, and Puppet
- def configMgmtProvider = 'Chef' 
+// def configMgmtProvider = 'Chef';
+def configMgmtProvider = 'Puppet' 
  
  // 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
  def chefConfigurations = [
@@ -127,14 +139,21 @@
  ];
  
  // 7.2 (b) Set the following parameters if the selected configuration management tool is 'Puppet'
- def puppetParameters = [
-      'additional_options': null,
-      'certname': null,
-      'debug': '0',
-      'master_host': '10.168.30.1',
-      'masterport': null,
-      'puppet_path': 'sudo /usr/bin/puppet',
- ]
+ // def puppetParameters = [
+ //      'additional_options': null,
+ //      'certname': null,
+ //      'debug': '0',
+ //      'master_host': '10.168.30.1',
+ //      'masterport': null,
+ //      'puppet_path': 'sudo /usr/bin/puppet',
+ // ]
+def puppetParameters = [
+    'server': '10.0.0.1',
+    'cert_name': 'local_cert',
+    'environment': 'puppet_agent',
+    'puppet_path': '/usr/bin/puppet',
+    'additional_options': 'hello',
+];
 	
  // End of resource template parameters -----------------------------
  
@@ -162,12 +181,12 @@
  configMgmtProviders['Chef'] = [ 
    name : 'EC-Chef',
    procedureName : '_RegisterAndConvergeNode',
-   parameters : chefParameters
+   parameters : chefParameters,
  ]
  
  configMgmtProviders['Puppet'] = [ 
    name : 'EC-Puppet',
-   procedureName : 'Configure Agent',
+   procedureName : 'ConfigureAgent',
    parameters : puppetParameters
  ]
  
