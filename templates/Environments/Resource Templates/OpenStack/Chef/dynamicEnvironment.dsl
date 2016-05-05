@@ -22,9 +22,9 @@
  // 3. Set the cloud provider to use for the resource template
  // Valid values are: Amazon, OpenStack, and Azure
 
- // def cloudProvider = 'Azure';
- def cloudProvider = 'Amazon';
- //  def cloudProvider = 'OpenStack';
+ //def cloudProvider = 'Azure';
+ // def cloudProvider = 'Amazon';
+ def cloudProvider = 'OpenStack';
 
  // 4. Whether the referenced plugin configurations 
  // should be created or replaced if they already exists.
@@ -40,9 +40,16 @@
 
  // 5.1 (a) Set the following configurations for Amazon EC2 if cloudProvider is 'Amazon'
  def amazonConfigurations = [
-    'config': cloudProviderPluginConfiguration,
-    //TODO: EC2 CreateConfiguration parameters
-  ]
+   'config_name': cloudProviderPluginConfiguration,
+   'debug': '10',
+   'desc': 'EC2 configuration, created by DSL',
+   'resource_pool': 'local',
+   'service_url': 'https://ec2.amazonaws.com',
+   'workspace': 'default',
+   'attempt': '1',
+   'userName': 'admin',
+   'password': 'admin',
+ ];
 
  // 5.1 (b) Set the following provisioning parameters for Amazon EC2 if cloudProvider is 'Amazon'
  def amazonParameters = [
@@ -94,7 +101,7 @@
     'blockstorage_api_version': '1',
     'keystone_api_version': '2.0',
     'image_api_version': '2',
-    'identity_service_url': 'https://identity.api.url',
+    'identity_service_url': 'https://identity.api.url/123',
     'compute_service_url': 'https://compute.api.url',
     'image_service_url': 'https://images_api_url',
     'debug_level': '10',
@@ -102,7 +109,7 @@
     'tenant_id': '123456',
     'blockstorage_service_url': 'https://blockstorage.api.url',
     'config_name': cloudProviderPluginConfiguration,
-    'userName': 'admin',
+    'userName': 'admin123',
     'password': 'admin',
   ];
   // 5.3 (b) Set the following provisioning parameters for OpenStack if cloudProvider is 'OpenStack'
@@ -118,8 +125,8 @@
   
  // 6. Set the configuration management tool to use for the resource template
  // Valid values are: Chef, and Puppet
-// def configMgmtProvider = 'Chef';
-def configMgmtProvider = 'Puppet' 
+def configMgmtProvider = 'Chef';
+//def configMgmtProvider = 'Puppet' 
  
  // 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
  def chefConfigurations = [
@@ -441,6 +448,7 @@ def createConfig(P) {
      def cloudProviderPlugin
      if (cloudProvider == 'Amazon') {
          cloudProvidePlugin = 'EC-EC2';
+         createConfigEC2(amazonConfigurations)
      }
      else if (cloudProvider == 'OpenStack') {
          cloudProviderPlugin = 'EC-OpenStack';
@@ -448,6 +456,7 @@ def createConfig(P) {
      }
      else if (cloudProvider == 'Azure') {
          cloudProviderPlugin = 'EC-Azure';
+         createConfigAzure(azureConfigurations);
      }
      else {
          throw new IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
