@@ -80,7 +80,9 @@ project projectName, {
 				subprocedure = 'RunCommand'
 				subproject = '/plugins/EC-Core/project'
 				actualParameter 'commandToRun', '''
+				ectool echo "`pwd`"
 	    cd "$[/myComponent/ec_content_details/directory]"
+		ectool setProperty '/myJob/pathToWarfile' --value "`pwd`/$[Artifact Name]"
 	  	mkdir WEB-INF
 	  	echo "jdbc.driverClassName=com.mysql.jdbc.Driver\njdbc.url=$[MySQL Connection]" > WEB-INF/jdbc.properties
 	    jar uf $[Artifact Name] WEB-INF/jdbc.properties
@@ -94,10 +96,10 @@ project projectName, {
 				subprocedure = 'DeployApp'
 				subproject = '/plugins/EC-Tomcat/project'
 				actualParameter 'applicationconfigfilepath', ''
-				actualParameter 'apppath', '$[Artifact Name]".slice(0, -4)]'
+				actualParameter 'apppath', '$[/javascript "$[Artifact Name]".slice(0, -4)]'
 				actualParameter 'serverconfigname', '$[Tomcat Config]'
 				actualParameter 'updateapp', '0'
-				actualParameter 'warfile', '$[Artifact Name]'
+				actualParameter 'warfile', '$[/myJob/pathToWarfile]'
 			}
 
 			processDependency 'get app files', targetProcessStepName: 'update jdbc properties', { branchType = 'ALWAYS' }
@@ -113,7 +115,7 @@ project projectName, {
 				processStepType = 'plugin'
 				subprocedure = 'UndeployApp'
 				subproject = '/plugins/EC-Tomcat/project'
-				actualParameter 'apppath', '$[Artifact Name]".slice(0, -4)]'
+				actualParameter 'apppath', '$[/javascript "$[Artifact Name]".slice(0, -4)]'
 				actualParameter 'configname', '$[Tomcat Config]'
 			}
 		}
