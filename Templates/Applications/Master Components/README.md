@@ -10,10 +10,11 @@ DSL templates for creating master components for application components that can
     * Microsoft IIS   - **EC-IIS7**
     * Oracle Weblogic - **EC-Weblogic**
     * Tomcat          - **EC-Tomcat**
+    * IIS             - **EC-IIS7**
   
   2. The **EC-FileSysRepo** is assumed to be pre-installed on the **ElectricFlow** server.
   
-  3. Repository for **EC-FileSysRepo** plugin should contain WAR file, that will be deployed to Java application servers (**JBoss**, **WebLogic** or **WebSphere**).
+  3. Repository for **EC-FileSysRepo** plugin should contain WAR file, that will be deployed to Java application servers (**JBoss**, **WebLogic** or **WebSphere**). For IIS Web server repository should contain zipped archive of Web Application that will be deployed.
 
 ## Instructions ##
 

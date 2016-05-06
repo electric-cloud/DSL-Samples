@@ -105,7 +105,7 @@ project projectName, {
 
 				subprocedure = 'DeployApp'
 				subproject = '/plugins/EC-JBoss/project'
-				actualParameter 'appname', '$[/javascript "$[Artifact Name]".slice(0, -4)]'
+				actualParameter 'appname', ''
 				actualParameter 'assignallservergroups', '0'
 				actualParameter 'assignservergroups', ''
 				actualParameter 'force', '0'
@@ -130,7 +130,7 @@ project projectName, {
 				subprocedure = 'UndeployApp'
 				subproject = '/plugins/EC-JBoss/project'
 				actualParameter 'allrelevantservergroups', '0'
-				actualParameter 'appname', '$[/javascript "$[Artifact Name]".slice(0, -4)]'
+				actualParameter 'appname', '$[Artifact Name]'
 				actualParameter 'keepcontent', '0'
 				actualParameter 'scriptphysicalpath', '$[JBoss Home]/bin/jboss-cli.sh'
 				actualParameter 'serverconfig', '$[JBoss Config]'
