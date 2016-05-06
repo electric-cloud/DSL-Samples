@@ -3,56 +3,56 @@
  */
  
  // ------------------------------------------------------
- // Parameters used by the resource template
- // You should set these parameter values 
- // to create the required resource template.
- // Once the resource template has been created 
- // on the ElectricFlow server, it can be used 
- // to provision dynamic environments for 
- // application deployments.
+// Parameters used by the resource template
+// You should set these parameter values 
+// to create the required resource template.
+// Once the resource template has been created 
+// on the ElectricFlow server, it can be used 
+// to provision dynamic environments for 
+// application deployments.
 
- // 1. Set the resource template name 
- def resourceTemplateName = 'PROVIDE RESOURCE TEMPLATE NAME'
- 
- // 2. Update the project name if the resource template
- // should be created in a project other than 'Default'. 
- // The project will be created if it does not exist.
- def projectName = 'Default'
- 
- // 3. Set the cloud provider to use for the resource template
- // Valid values are: Amazon, OpenStack, and Azure
+// 1. Set the resource template name 
+def resourceTemplateName = 'PROVIDE RESOURCE TEMPLATE NAME'
 
- //def cloudProvider = 'Azure';
- // def cloudProvider = 'Amazon';
- def cloudProvider = 'OpenStack';
+// 2. Update the project name if the resource template
+// should be created in a project other than 'Default'. 
+// The project will be created if it does not exist.
+def projectName = 'Default'
 
- // 4. Whether the referenced plugin configurations 
- // should be created or replaced if they already exists.
- // Set this flag to false if the configurations already 
- // exist and you do not want the script to replace them.
- // This flag applies to both the cloud provider plugin 
- // configuration and the configuration management plugin.
- def createOrReplaceConfiguration = true
- 
- def cloudProviderPluginConfiguration = 'cpConfig'
- def configMgmtPluginConfiguration    = 'cmConfig'
+// 3. Set the cloud provider to use for the resource template
+// Valid values are: Amazon, OpenStack, and Azure
+
+//def cloudProvider = 'Azure';
+// def cloudProvider = 'Amazon';
+def cloudProvider = 'OpenStack';
+
+// 4. Whether the referenced plugin configurations 
+// should be created or replaced if they already exists.
+// Set this flag to false if the configurations already 
+// exist and you do not want the script to replace them.
+// This flag applies to both the cloud provider plugin 
+// configuration and the configuration management plugin.
+
+def createOrReplaceConfiguration = true 
+def cloudProviderPluginConfiguration = 'cpConfig'
+def configMgmtPluginConfiguration    = 'cmConfig'
 
 
- // 5.1 (a) Set the following configurations for Amazon EC2 if cloudProvider is 'Amazon'
- def amazonConfigurations = [
-   'config_name': cloudProviderPluginConfiguration,
-   'debug': '10',
-   'desc': 'EC2 configuration, created by DSL',
-   'resource_pool': 'local',
-   'service_url': 'https://ec2.amazonaws.com',
-   'workspace': 'default',
-   'attempt': '1',
-   'userName': 'admin',
-   'password': 'admin',
- ];
+// 5.1 (a) Set the following configurations for Amazon EC2 if cloudProvider is 'Amazon'
+def amazonConfigurations = [
+    'config_name': cloudProviderPluginConfiguration,
+    'debug': '10',
+    'desc': 'EC2 configuration, created by DSL',
+    'resource_pool': 'local',
+    'service_url': 'https://ec2.amazonaws.com',
+    'workspace': 'default',
+    'attempt': '1',
+    'userName': 'admin',
+    'password': 'admin',
+];
 
- // 5.1 (b) Set the following provisioning parameters for Amazon EC2 if cloudProvider is 'Amazon'
- def amazonParameters = [
+// 5.1 (b) Set the following provisioning parameters for Amazon EC2 if cloudProvider is 'Amazon'
+def amazonParameters = [
     'config': cloudProviderPluginConfiguration,
     'count': '1',
 	'group': 'security goes here',
@@ -70,33 +70,31 @@
     'use_private_ip': '0',
     'userData': '',
     'zone': 'us-west-1b',
-  ]
-  
-  // 5.2 (a) Set the following configurations for Azure if cloudProvider is 'Azure'
-  // TODO: Add Azure parameters for CreateConfiguration procedure
-  def azureConfigurations = [
-      'config_name': cloudProviderPluginConfiguration,
-      'debug_level': '8',
-      'attempt': '1',
-      'description': 'Enter your description here',
-      'userName': 'admin',
-      'password': 'admin',
-      'resource_pool': 'local',
-  ]
-  
-  // 5.2 (b) Set the following provisioning parameters for Azure if cloudProvider is 'Azure'
- def azureParameters = [
+];
+
+// 5.2 (a) Set the following configurations for Azure if cloudProvider is 'Azure'
+def azureConfigurations = [
+    'config_name': cloudProviderPluginConfiguration,
+    'debug_level': '8',
+    'attempt': '1',
+    'description': 'Enter your description here',
+    'userName': 'admin',
+    'password': 'admin',
+    'resource_pool': 'local',
+];
+
+// 5.2 (b) Set the following provisioning parameters for Azure if cloudProvider is 'Azure'
+def azureParameters = [
     'connection_config': cloudProviderPluginConfiguration,
     'region': 'East US',
     'resource_group_name': 'IIS_production1_servers',
     'vm_admin_password': 'admin',
     'vm_admin_user': 'admin',
     'vm_name': 'Prod_IIS',
-  ]
+];
 
-  // 5.3 (a) Set the following configurations for OpenStack if cloudProvider is 'OpenStack'
-  // TODO: Add open stack parameters for CreateConfiguration procedure
-  def openStackConfigurations = [
+// 5.3 (a) Set the following configurations for OpenStack if cloudProvider is 'OpenStack'
+def openStackConfigurations = [
     'api_version': '2',
     'blockstorage_api_version': '1',
     'keystone_api_version': '2.0',
@@ -111,49 +109,40 @@
     'config_name': cloudProviderPluginConfiguration,
     'userName': 'admin123',
     'password': 'admin',
-  ];
-  // 5.3 (b) Set the following provisioning parameters for OpenStack if cloudProvider is 'OpenStack'
-  // TODO: Add open stack parameters
-  def openStackParameters = [
+];
+
+// 5.3 (b) Set the following provisioning parameters for OpenStack if cloudProvider is 'OpenStack'
+def openStackParameters = [
     'connection_config': cloudProviderPluginConfiguration,
-    //    'projectName': 'Default',
     'keyPairName': 'keypair1',
     'image': 'image_id_for_openstack',
     'flavor': '100',
     'quantity': '2',
-  ];
+];
   
- // 6. Set the configuration management tool to use for the resource template
- // Valid values are: Chef, and Puppet
+// 6. Set the configuration management tool to use for the resource template
+// Valid values are: Chef, and Puppet
 def configMgmtProvider = 'Chef';
 //def configMgmtProvider = 'Puppet' 
  
- // 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
- def chefConfigurations = [
-   'config_name': configMgmtPluginConfiguration,
-   'userName': 'admin',
-   'password': 'admin',
-   'desc': 'Chef DSL configuration',
-   'server': 'chef_server'
- ];
- def chefParameters = [
+// 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
+def chefConfigurations = [
+    'config_name': configMgmtPluginConfiguration,
+    'userName': 'admin',
+    'password': 'admin',
+    'desc': 'Chef DSL configuration',
+    'server': 'chef_server'
+];
+def chefParameters = [
     additional_arguments : '',
     chef_client_path : '/usr/bin/chef-client',
     config : configMgmtPluginConfiguration,
     node_name : '',
     run_list : 'tomcat, java',
     use_sudo : '1',
- ];
+];
  
- // 7.2 (b) Set the following parameters if the selected configuration management tool is 'Puppet'
- // def puppetParameters = [
- //      'additional_options': null,
- //      'certname': null,
- //      'debug': '0',
- //      'master_host': '10.168.30.1',
- //      'masterport': null,
- //      'puppet_path': 'sudo /usr/bin/puppet',
- // ]
+// 7.2 (b) Set the following parameters if the selected configuration management tool is 'Puppet'
 def puppetParameters = [
     'server': '10.0.0.1',
     'cert_name': 'local_cert',
@@ -162,48 +151,46 @@ def puppetParameters = [
     'additional_options': 'hello',
 ];
 	
- // End of resource template parameters -----------------------------
+// End of resource template parameters -----------------------------
  
- // Cloud provider plugin configuration
- def cloudProviders = [:]
+// Cloud provider plugin configuration
+def cloudProviders = [:]
  
- cloudProviders['Amazon'] = [ 
-   name : 'EC-EC2',
-   procedureName : 'API_RunInstances',
-   parameters : amazonParameters
- ];
- cloudProviders['Azure'] = [ 
-   name : 'EC-Azure',
-   procedureName : 'Create VM',
-   parameters : azureParameters
- ];
- cloudProviders['OpenStack'] = [
-   name: 'EC-OpenStack',
-   procedureName: '_DeployDE',
-   parameters: openStackParameters
- ];
+cloudProviders['Amazon'] = [ 
+    name : 'EC-EC2',
+    procedureName : 'API_RunInstances',
+    parameters : amazonParameters
+];
+cloudProviders['Azure'] = [ 
+    name : 'EC-Azure',
+    procedureName : 'Create VM',
+    parameters : azureParameters
+];
+cloudProviders['OpenStack'] = [
+    name: 'EC-OpenStack',
+    procedureName: '_DeployDE',
+    parameters: openStackParameters
+];
      
- def configMgmtProviders = [:]
+def configMgmtProviders = [:]
  
- configMgmtProviders['Chef'] = [ 
-   name : 'EC-Chef',
-   procedureName : '_RegisterAndConvergeNode',
-   parameters : chefParameters,
- ]
+configMgmtProviders['Chef'] = [ 
+    name : 'EC-Chef',
+    procedureName : '_RegisterAndConvergeNode',
+    parameters : chefParameters,
+]
+configMgmtProviders['Puppet'] = [ 
+    name : 'EC-Puppet',
+    procedureName : 'ConfigureAgent',
+    parameters : puppetParameters
+]
  
- configMgmtProviders['Puppet'] = [ 
-   name : 'EC-Puppet',
-   procedureName : 'ConfigureAgent',
-   parameters : puppetParameters
- ]
- 
- if (!cloudProvider || !cloudProviders[cloudProvider]) {
-     throw new IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
- }
- 
- if (!configMgmtProvider || !configMgmtProviders[configMgmtProvider]) {
-     throw new IllegalArgumentException ("Invalid configuration management provider: $configMgmtProvider")
- }
+if (!cloudProvider || !cloudProviders[cloudProvider]) {
+    throw new IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
+}
+if (!configMgmtProvider || !configMgmtProviders[configMgmtProvider]) {
+    throw new IllegalArgumentException ("Invalid configuration management provider: $configMgmtProvider")
+}
 
 
 // Service functions section
@@ -436,56 +423,46 @@ def createConfig(P) {
     return 1;
 }
 
- // Create the plugin configurations if required
+// Create the plugin configurations if required
  
- if (createOrReplaceConfiguration) {
-     if (configMgmtProvider == 'Chef') {
-         createConfigChef(chefConfigurations);
-     }
-	// TODO: Handle Cloud provider plugin configuration
-	//1. Delete Configuration in case it exists
-	//2. Create the configuration
-     def cloudProviderPlugin
-     if (cloudProvider == 'Amazon') {
-         cloudProvidePlugin = 'EC-EC2';
-         createConfigEC2(amazonConfigurations)
-     }
-     else if (cloudProvider == 'OpenStack') {
-         cloudProviderPlugin = 'EC-OpenStack';
-         createConfigOpenStack(openStackConfigurations);
-     }
-     else if (cloudProvider == 'Azure') {
-         cloudProviderPlugin = 'EC-Azure';
-         createConfigAzure(azureConfigurations);
-     }
-     else {
-         throw new IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
-     }
-	// TODO: Handle Configuration management plugin configuration
-	//1. Delete Configuration in case it exists
-	//2. Create the configuration
-	
- }
- // Resource template DSL
-def result 
+if (createOrReplaceConfiguration) {
+    if (configMgmtProvider == 'Chef') {
+        createConfigChef(chefConfigurations);
+    }
+    def cloudProviderPlugin
+    if (cloudProvider == 'Amazon') {
+        cloudProvidePlugin = 'EC-EC2';
+        createConfigEC2(amazonConfigurations)
+    }
+    else if (cloudProvider == 'OpenStack') {
+        cloudProviderPlugin = 'EC-OpenStack';
+        createConfigOpenStack(openStackConfigurations);
+    }
+    else if (cloudProvider == 'Azure') {
+        cloudProviderPlugin = 'EC-Azure';
+        createConfigAzure(azureConfigurations);
+    }
+    else {
+        throw new IllegalArgumentException ("Invalid cloud provider: $cloudProvider")
+    }
+}
+// Resource template DSL
+def result;
 
 project projectName, { 
-  result = resourceTemplate resourceTemplateName, {
+    result = resourceTemplate resourceTemplateName, {
+        cloudProviderPluginKey = cloudProviders[cloudProvider].name
+        cloudProviderProcedure = cloudProviders[cloudProvider].procedureName
+        cloudProviderProjectName = null
 
-    cloudProviderPluginKey = cloudProviders[cloudProvider].name
-    cloudProviderProcedure = cloudProviders[cloudProvider].procedureName
-    cloudProviderProjectName = null
-  
-    cloudProviderParameter = cloudProviders[cloudProvider].parameters
-  
-    cfgMgrPluginKey = configMgmtProviders[configMgmtProvider].name
-    cfgMgrProcedure = configMgmtProviders[configMgmtProvider].procedureName
-    cfgMgrProjectName = null
-  
-    cfgMgrParameter = configMgmtProviders[configMgmtProvider].parameters
+        cloudProviderParameter = cloudProviders[cloudProvider].parameters
 
-  }
+        cfgMgrPluginKey = configMgmtProviders[configMgmtProvider].name
+        cfgMgrProcedure = configMgmtProviders[configMgmtProvider].procedureName
+        cfgMgrProjectName = null
 
+        cfgMgrParameter = configMgmtProviders[configMgmtProvider].parameters
+    }
 }
 // return the resource template created
 result
