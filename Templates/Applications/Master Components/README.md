@@ -18,9 +18,9 @@ DSL templates for creating master components for application components that can
 
 ## Instructions ##
 
-1. Edit the template file for your choosen application server replacing the parameter values with the desired values.
-
-2. Run the following command to execute the updated DSL template.
+1. Run the following command to execute the DSL template for your choosen application server.
  `ectool evalDsl --dslFile <file-path>`
  
-3. You should now have the Master Component created or updated in **ElectricFlow** under **Applications -> Master Components** that can be used to create applications for deployment. 
+2. You should now have the Master Component created or updated in **ElectricFlow** under **Applications -> Master Components**. 
+
+3. The master component has parameters defined to allow you to configure the application server specific values such as server home directory, WAR file name, etc. You can specify the actual parameter values to use when creating application components using these master components as references.
