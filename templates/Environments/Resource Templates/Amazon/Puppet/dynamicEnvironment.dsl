@@ -74,21 +74,39 @@ def amazonParameters = [
 def azureConfigurations = [
     'config_name': cloudProviderPluginConfiguration,
     'debug_level': '8',
-    'attempt': '1',
-    'description': 'Enter your description here',
+    'desc': 'Enter your description here',
     'userName': 'admin',
     'password': 'admin',
     'resource_pool': 'local',
+    'subscription_id': 'your-subscription-id',
+    'tenant_id': 'your-tenant-id',
+    'vm_userName': 'vm_admin',
+    'vm_password': 'vm_admin',
 ];
 
 // 5.2 (b) Set the following provisioning parameters for Azure if cloudProvider is 'Azure'
 def azureParameters = [
     'connection_config': cloudProviderPluginConfiguration,
-    'region': 'East US',
-    'resource_group_name': 'IIS_production1_servers',
-    'vm_admin_password': 'admin',
-    'vm_admin_user': 'admin',
-    'vm_name': 'Prod_IIS',
+    'create_public_ip': '0',
+    'disable_password_auth': '0',
+    'image': 'image-id',
+    'instance_count': '1',
+    'is_user_image': '1',
+    'job_step_timeout': '',
+    'location': 'local',
+    'os_type': 'Windows',
+    'public_key': '',
+    'resource_group_name': 'local',
+    'resource_pool': '',
+    'resource_port': '',
+    'resource_workspace': 'default',
+    'resource_zone': '',
+    'result_location': '',
+    'server_name': 'your_server_name',
+    'storage_account': 'your_storage_account',
+    'storage_container': 'your_storage_container',
+    'subnet': '',
+    'vnet': '',
 ];
 
 // 5.3 (a) Set the following configurations for OpenStack if cloudProvider is 'OpenStack'
@@ -121,7 +139,7 @@ def openStackParameters = [
 // 6. Set the configuration management tool to use for the resource template
 // Valid values are: Chef, and Puppet
 
-def configMgmtProvider = 'Puppet' 
+def configMgmtProvider = 'Puppet';
  
 // 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
 def chefConfigurations = [
@@ -200,12 +218,15 @@ def createConfigAzure(P) {
     if (!P.userName || !P.password) {
         throw new IllegalArgumentException("userName and password arguments are required");
     }
-    
+    if (!P.vm_userName || !P.vm_password) {
+        throw new IllegalArgumentException("vm_userName and vm_password arguments are required");
+    }
     def MandatoryParams = [
         'debug_level',
         'resource_pool',
-        'attempt',
-        'description',
+        'subscription_id',
+        'tenant_id',
+        'desc',
     ];
     Params = [:];
     MandatoryParams.each {
@@ -220,10 +241,16 @@ def createConfigAzure(P) {
                  pluginName: 'EC-Azure',
                  pluginProperty: 'azure_cfgs',
                  config_name: P.config_name,
-                 config_name_field: 'config_name',
+                 //config_name_field: '',
                  credential: [
                      userName: P.userName,
                      password: P.password,
+                     ],
+                 credential2: [
+                     credential_name: P.config_name + '_vm_credential',
+                     credentialParameter: 'vm_credential',
+                     userName: P.vm_userName,
+                     password: P.vm_password,
                  ],
                  configParams: Params
                  ]);
@@ -377,19 +404,29 @@ def createConfig(P) {
 		Cred.password = P.credential.password
         P.configParams.credential = P.config_name
     }
+    if (P.credential2) {
+        Cred2 = new RuntimeCredentialImpl();
+        Cred2.name = P.credential2.credential_name;
+        Cred2.userName = P.credential2.userName;
+        Cred2.password = P.credential2.password;
+        P.configParams.put(P.credential2.credentialParameter, P.credential2.credential_name);
+    }
     def propertyPath = '/projects/' + projectName + '/' + P.pluginProperty;
     def prop = getProperty([propertyName: propertyPath]);
     // Let's get config
     propertyPath = propertyPath + '/' + P.config_name;
 
     if (!getProperty([propertyName: propertyPath])) {
+        def Creds = [Cred];
+        if (P.credential2) {
+            Creds = [Cred, Cred2];
+        }
         resp = runProcedure([
                             projectName: projectName,
                             procedureName: 'CreateConfiguration',
                             actualParameter: P.configParams,
                             
-                            credential: [Cred]
-                            
+                            credential: Creds
                             ]);
         // Now let's grab the jobId launched to run the procedure
         def id=resp.jobId
