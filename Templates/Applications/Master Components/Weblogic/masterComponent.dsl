@@ -50,10 +50,10 @@ project projectName, {
 			type = 'entry'
 		}
 
-		formalParameter 'WebLogic Home', defaultValue: null, {
-			description = 'Directory where WebLogic AS is installed'
+		formalParameter 'Wlst', defaultValue: null, {
+			description = 'Specify absolute path to wlst script'
 			expansionDeferred = '0'
-			label = 'WebLogic Installation Directory'
+			label = 'Path to WebLogic Scripting Tool'
 			orderIndex = '4'
 			required = '1'
 			type = 'entry'
@@ -116,11 +116,10 @@ project projectName, {
 				actualParameter 'configname', '$[WebLogic Config]'
 				actualParameter 'is_library', '0'
 				actualParameter 'targets', '$[WebLogic Server]'
-				actualParameter 'wlstabspath', '$[WebLogic Home]/common/bin/wlst.sh'
+				actualParameter 'wlstabspath', '$[Wlst]'
 			}
 
 			processDependency 'get app files', targetProcessStepName: 'update jdbc properties', { branchType = 'ALWAYS' }
-
 			processDependency 'update jdbc properties', targetProcessStepName: 'Deploy', { branchType = 'ALWAYS' }
 		}
 
@@ -135,7 +134,7 @@ project projectName, {
 				actualParameter 'appname', '$[/javascript "$[Artifact Name]".slice(0, -4)]'
 				actualParameter 'configname', '$[WebLogic Config]'
 				actualParameter 'gracefulmode', '0'
-				actualParameter 'wlstabspath', '$[WebLogic Home]/common/wlst.sh'
+				actualParameter 'wlstabspath', '$[Wlst]'
 			}
 		}
 
