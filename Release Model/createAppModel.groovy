@@ -2,7 +2,6 @@
 Format: Electric Flow DSL
 File: createAppModel.groovy
 Description: Create environment and application models
-
 */
 import groovy.json.JsonOutput
 
