@@ -19,12 +19,7 @@ def resourceTemplateName = 'PROVIDE RESOURCE TEMPLATE NAME'
 // The project will be created if it does not exist.
 def projectName = 'Default'
 
-// 3. Set the cloud provider to use for the resource template
-// Valid values are: Amazon, OpenStack, and Azure
-
-def cloudProvider = 'Amazon';
-
-// 4. Whether the referenced plugin configurations 
+// 3. Whether the referenced plugin configurations 
 // should be created or replaced if they already exists.
 // Set this flag to false if the configurations already 
 // exist and you do not want the script to replace them.
@@ -36,7 +31,7 @@ def cloudProviderPluginConfiguration = 'cpConfig'
 def configMgmtPluginConfiguration    = 'cmConfig'
 
 
-// 5.1 (a) Set the following configurations for Amazon EC2 if cloudProvider is 'Amazon'
+// 4 (a) Set the following plugin configurations for Amazon EC2
 def amazonConfigurations = [
     'config_name': cloudProviderPluginConfiguration,
     'debug': '10',
@@ -45,15 +40,15 @@ def amazonConfigurations = [
     'service_url': 'https://ec2.amazonaws.com',
     'workspace': 'default',
     'attempt': '1',
-    'userName': 'admin',
-    'password': 'admin',
+    'userName': 'PROVIDE EC2 Access Key ID',
+    'password': 'PROVIDE EC2 Secret Access Key',
 ];
 
-// 5.1 (b) Set the following provisioning parameters for Amazon EC2 if cloudProvider is 'Amazon'
+// 4 (b) Update the following provisioning parameters for your EC2 account
 def amazonParameters = [
     'config': cloudProviderPluginConfiguration,
     'count': '1',
-	'group': 'security goes here',
+	'group': 'PROVIDE Security Group ID',
     'image': 'ami-17b75453',
     'instanceInitiatedShutdownBehavior': '',
     'instanceType': 'm1.small',
@@ -70,82 +65,11 @@ def amazonParameters = [
     'zone': 'us-west-1b',
 ];
 
-// 5.2 (a) Set the following configurations for Azure if cloudProvider is 'Azure'
-def azureConfigurations = [
-    'config_name': cloudProviderPluginConfiguration,
-    'debug_level': '8',
-    'desc': 'Enter your description here',
-    'userName': 'admin',
-    'password': 'admin',
-    'resource_pool': 'local',
-    'subscription_id': 'your-subscription-id',
-    'tenant_id': 'your-tenant-id',
-    'vm_userName': 'vm_admin',
-    'vm_password': 'vm_admin',
-];
-
-// 5.2 (b) Set the following provisioning parameters for Azure if cloudProvider is 'Azure'
-def azureParameters = [
-    'connection_config': cloudProviderPluginConfiguration,
-    'create_public_ip': '0',
-    'disable_password_auth': '0',
-    'image': 'image-id',
-    'instance_count': '1',
-    'is_user_image': '1',
-    'job_step_timeout': '',
-    'location': 'local',
-    'os_type': 'Windows',
-    'public_key': '',
-    'resource_group_name': 'local',
-    'resource_pool': '',
-    'resource_port': '',
-    'resource_workspace': 'default',
-    'resource_zone': '',
-    'result_location': '',
-    'server_name': 'your_server_name',
-    'storage_account': 'your_storage_account',
-    'storage_container': 'your_storage_container',
-    'subnet': '',
-    'vnet': '',
-];
-
-// 5.3 (a) Set the following configurations for OpenStack if cloudProvider is 'OpenStack'
-def openStackConfigurations = [
-    'api_version': '2',
-    'blockstorage_api_version': '1',
-    'keystone_api_version': '2.0',
-    'image_api_version': '2',
-    'identity_service_url': 'https://identity.api.url/123',
-    'compute_service_url': 'https://compute.api.url',
-    'image_service_url': 'https://images_api_url',
-    'debug_level': '10',
-    'resource': 'local',
-    'tenant_id': '123456',
-    'blockstorage_service_url': 'https://blockstorage.api.url',
-    'config_name': cloudProviderPluginConfiguration,
-    'userName': 'admin123',
-    'password': 'admin',
-];
-
-// 5.3 (b) Set the following provisioning parameters for OpenStack if cloudProvider is 'OpenStack'
-def openStackParameters = [
-    'connection_config': cloudProviderPluginConfiguration,
-    'keyPairName': 'keypair1',
-    'image': 'image_id_for_openstack',
-    'flavor': '100',
-    'quantity': '2',
-];
-  
-// 6. Set the configuration management tool to use for the resource template
-// Valid values are: Chef, and Puppet
-
-def configMgmtProvider = 'Chef';
- 
-// 7.1 (a) Set the following parameters if the selected configuration management tool is 'Chef'
+// 5 Set the following parameters if the selected configuration management tool is 'Chef'
 def chefConfigurations = [
     'config_name': configMgmtPluginConfiguration,
-    'userName': 'admin',
-    'password': 'admin',
+    'userName': 'Chef User name',
+    'password': 'Chef Validation PEM',
     'desc': 'Chef DSL configuration',
     'server': 'chef_server'
 ];
@@ -158,47 +82,25 @@ def chefParameters = [
     use_sudo : '1',
 ];
  
-// 7.2 (b) Set the following parameters if the selected configuration management tool is 'Puppet'
-def puppetParameters = [
-    'server': '10.0.0.1',
-    'cert_name': 'local_cert',
-    'environment': 'puppet_agent',
-    'puppet_path': '/usr/bin/puppet',
-    'additional_options': 'hello',
-];
-	
 // End of resource template parameters -----------------------------
  
 // Cloud provider plugin configuration
 def cloudProviders = [:]
+def cloudProvider = 'Amazon';
  
 cloudProviders['Amazon'] = [ 
     name : 'EC-EC2',
     procedureName : 'API_RunInstances',
     parameters : amazonParameters
 ];
-cloudProviders['Azure'] = [ 
-    name : 'EC-Azure',
-    procedureName : 'Create VM',
-    parameters : azureParameters
-];
-cloudProviders['OpenStack'] = [
-    name: 'EC-OpenStack',
-    procedureName: '_DeployDE',
-    parameters: openStackParameters
-];
      
 def configMgmtProviders = [:]
+def configMgmtProvider = 'Chef';
  
 configMgmtProviders['Chef'] = [ 
     name : 'EC-Chef',
     procedureName : '_RegisterAndConvergeNode',
     parameters : chefParameters,
-]
-configMgmtProviders['Puppet'] = [ 
-    name : 'EC-Puppet',
-    procedureName : 'ConfigureAgent',
-    parameters : puppetParameters
 ]
  
 if (!cloudProvider || !cloudProviders[cloudProvider]) {
