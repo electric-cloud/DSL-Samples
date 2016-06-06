@@ -8,7 +8,7 @@
  */
 
 // Name of Master Component for IIS
-def masterComponentName = 'IIS Deployment and Undeployment Procedures'
+def masterComponentName = '.NET Application Master Component'
 
 // Project name where component will be created
 def projectName = 'Default'
@@ -20,14 +20,14 @@ def result
 project projectName, {
 
 	component masterComponentName, pluginName: null, {
-		description = 'This master component contains steps for deployment and undeployment of IIS website.'
+		description = 'This master component contains steps for deploying and undeploying an app on an IIS website.'
 		pluginKey = 'EC-FileSysRepo'
 
-		formalParameter 'Artifact Name', defaultValue: 'wwwapp.zip', {
+		formalParameter 'Artifact Name', defaultValue: null, {
 			expansionDeferred = '0'
 			label = 'Artifact Name'
-			orderIndex = '1'
 			required = '1'
+			orderIndex = 1
 			type = 'entry'
 		}
 
@@ -35,35 +35,45 @@ project projectName, {
 			description = 'Directory from which to retrieve artifact'
 			expansionDeferred = '0'
 			label = 'Source Directory'
-			orderIndex = '2'
 			required = '1'
+			orderIndex = 2
 			type = 'entry'
 		}
 
+		/* IIS Configuration is not required for the deploy and undeploy processes
 		formalParameter 'IIS Config', defaultValue: 'iisConfig', {
 			description = 'Configuration name of ElectricFlow IIS7 plugin'
 			expansionDeferred = '0'
 			label = 'IIS Configuration Name'
-			orderIndex = '3'
 			required = '1'
+			orderIndex = 3
 			type = 'entry'
-		}
+		}*/
 
 		formalParameter 'Web Site Name', defaultValue: 'Default Web Site', {
-			description = 'Name of IIS web site to which add application'
+			description = 'Name of IIS web site on which to create the application'
 			expansionDeferred = '0'
 			label = 'Web Site Name'
-			orderIndex = '4'
 			required = '1'
+			orderIndex = 3
 			type = 'entry'
 		}
 
+		formalParameter 'Application Name', defaultValue: null, {
+			description = 'Name of the application created on the specified IIS site'
+			expansionDeferred = '0'
+			label = 'Application Name'
+			required = '1'
+			orderIndex = 4
+			type = 'entry'
+		}
+		
 		formalParameter 'Web Application Path', defaultValue: 'C:\\Inetpub\\wwwroot', {
 			description = 'Physical path to web application. Files from Artifact will be placed to this location.'
 			expansionDeferred = '0'
 			label = 'Web Application Path'
-			orderIndex = '5'
 			required = '1'
+			orderIndex = 5
 			type = 'entry'
 		}
 
@@ -86,8 +96,8 @@ project projectName, {
 				processStepType = 'plugin'
 				subprocedure = 'Unzip File'
 				subproject = '/plugins/EC-FileOps/project'
-				actualParameter 'destinationDir', '$[Web Application Path]\\$[/javascript "$[Artifact Name]".slice(0, -4)]'
-				actualParameter 'zipFile', '$[Artifact Name]'
+				actualParameter 'destinationDir', '$[Web Application Path]\\$[Artifact Name]'
+				actualParameter 'zipFile', '$[Artifact Name].zip'
 			}
 
 			processStep 'create web application', {
@@ -96,10 +106,32 @@ project projectName, {
 				subprocedure = 'CreateWebApplication'
 				subproject = '/plugins/EC-IIS7/project'
 				actualParameter 'appname', '$[Web Site Name]'
-				actualParameter 'path', '/$[/javascript "$[Artifact Name]".slice(0, -4)]'
-				actualParameter 'physicalpath', '$[Web Application Path]\\$[/javascript "$[Artifact Name]".slice(0, -4)]'
+				actualParameter 'path', '/$[Application Name]'
+				actualParameter 'physicalpath', '$[Web Application Path]\\$[Artifact Name]'
 			}
 
+			processStep 'create application pool', {
+				errorHandling = 'failProcedure'
+				processStepType = 'plugin'
+				subprocedure = 'CreateAppPool'
+				subproject = '/plugins/EC-IIS7/project'
+				actualParameter 'apppoolname', '$[Application Name] Pool'
+			}
+			
+			processStep 'assign application to pool', {
+				errorHandling = 'failProcedure'
+				processStepType = 'plugin'
+				subprocedure = 'AssignAppToAppPool'
+				subproject = '/plugins/EC-IIS7/project'
+				actualParameter 'apppoolname', '$[Application Name] Pool'
+				actualParameter 'appname', '/$[Application Name]'
+				actualParameter 'sitename', '$[Web Site Name]'
+			}
+			
+			processDependency 'create application pool', targetProcessStepName: 'assign application to pool', { branchType = 'ALWAYS' }
+			
+			processDependency 'create web application', targetProcessStepName: 'create application pool', { branchType = 'ALWAYS' }
+						
 			processDependency 'unzip files', targetProcessStepName: 'create web application', { branchType = 'ALWAYS' }
 
 			processDependency 'get app files', targetProcessStepName: 'unzip files', { branchType = 'ALWAYS' }
@@ -108,13 +140,23 @@ project projectName, {
 		process 'Undeploy', {
 			processType = 'UNDEPLOY'
 
-			processStep 'Undeploy', {
+			processStep 'undeploy application', {
 				errorHandling = 'failProcedure'
 				processStepType = 'plugin'
 				subprocedure = 'DeleteWebApplication'
 				subproject = '/plugins/EC-IIS7/project'
-				actualParameter 'appname', '$[Web Site Name]/$[/javascript "$[Artifact Name]".slice(0, -4)]'
+				actualParameter 'appname', '$[Web Site Name]/$[Application Name]'
 			}
+			
+			processStep 'delete application pool', {
+				errorHandling = 'failProcedure'
+				processStepType = 'plugin'
+				subprocedure = 'DeleteAppPool'
+				subproject = '/plugins/EC-IIS7/project'
+				actualParameter 'apppoolname', '$[Application Name] Pool'
+			}
+			
+			processDependency 'undeploy application', targetProcessStepName: 'delete application pool', { branchType = 'ALWAYS' }
 		}
 
 		// Custom properties
