@@ -102,7 +102,7 @@ def azureParameters = [
     'resource_workspace': 'default',
     'resource_zone': '',
     'result_location': '',
-    'server_name': 'your_server_name',
+    'vm_name': 'your_vm_name',
     'storage_account': 'your_storage_account',
     'storage_container': 'your_storage_container',
     'subnet': '',
