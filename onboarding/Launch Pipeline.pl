@@ -8,7 +8,7 @@ $| = 1;
 my $ec = new ElectricCommander({'format'=>'json'});
 
 my $pipeline = $ec->runPipeline(
-	"Default", "$[app]",
+	"$[/myProject/projectName]", "$[app]",
 	{startingStage => "$[startingStage]"}
 	)->{responses}[0]->{flowRuntime};
 

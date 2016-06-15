@@ -6,6 +6,7 @@ Description:
 */
 import groovy.json.JsonOutput
 
+def projName  = "$[projName]"
 def appName  = "$[appName]"
 def appTech  = "$[appTech]"
 def artifactGroup = "$[artifactGroup]"
@@ -13,7 +14,7 @@ def artifactKey = "$[artifactKey]"
 
 def artifactName_ = "${artifactGroup}:${artifactKey}"
 		
-project appName, {
+project projName, {
 	procedure "Build",{
 		
 		step "Get Sources"
@@ -65,10 +66,10 @@ project appName, {
 		formalParameter "env"
 		
 		step "Delete the snapshot",
-			command:  "ectool deleteSnapshot Default \"${appName}\" \"${appName}-1.0\""
+			command:  "ectool deleteSnapshot \"${projName}\" \"${appName}\" \"${appName}-1.0\""
 		
 		step "createSnapshot", 
-			command: "ectool createSnapshot Default \"${appName}\" \"${appName}-1.0\" --environmentName \"" + '$' + "[env]\""		
+			command: "ectool createSnapshot \"${projName}\" \"${appName}\" \"${appName}-1.0\" --environmentName \"" + '$' + "[env]\""		
 	}
 	
 	procedure "Code Scan",{
