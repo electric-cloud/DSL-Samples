@@ -21,14 +21,14 @@ project "Default", {
 				subproject: appName,
 				subprocedure: 'Code Scan',
 				expansionDeferred: "1",
-				errorHandling: "ignore"
+				errorHandling: "continueOnError"
 				
 			task "Build",
 				taskType: 'PROCEDURE',
 				subproject: appName,
 				subprocedure: 'Build',
 				expansionDeferred: "1",
-				errorHandling: "ignore"
+				errorHandling: "continueOnError"
 		
 			task "Deploy",
 				taskType: "PROCESS",
@@ -39,14 +39,14 @@ project "Default", {
 				environmentName: "dev-${appName}",
 				clearActualParameters: "true",
 				actualParameter: [ ec_smartDeployOption: "true" ],
-				errorHandling: "ignore"
+				errorHandling: "continueOnError"
 				
 			task "Application URL",
 				taskType: 'PROCEDURE',
 				subproject: appName,
 				subprocedure: 'Application URL',
 				expansionDeferred: "1",
-				errorHandling: "ignore"
+				errorHandling: "continueOnError"
 				
 			task "Create Snapshot",
 				taskType: 'PROCEDURE',
@@ -56,7 +56,7 @@ project "Default", {
 				actualParameter: [
 					env: (String) "dev-${appName}"
 				],
-				errorHandling: "ignore"
+				errorHandling: "continueOnError"
 
 		} // Dev Stage
 /*		
@@ -80,14 +80,14 @@ project "Default", {
 				clearActualParameters: true,
 				taskType: "PROCESS",
 				actualParameter: [ ec_smartDeployOption: "true" ],
-				errorHandling: "ignore"
+				errorHandling: "continueOnError"
 				
 			task "Application URL",
 				taskType: 'PROCEDURE',
 				subproject: appName,
 				subprocedure: 'Application URL',
 				expansionDeferred: "1",
-				errorHandling: "ignore"
+				errorHandling: "continueOnError"
 				
 			task "System Tests",
 				taskType: 'PROCEDURE',
@@ -117,14 +117,14 @@ project "Default", {
 					clearActualParameters: true,
 					taskType: "PROCESS",
 					actualParameter: [ ec_smartDeployOption: "true" ],
-					errorHandling: "ignore"
+					errorHandling: "continueOnError"
 				
 				task "Application URL",
 					taskType: 'PROCEDURE',
 					subproject: appName,
 					subprocedure: 'Application URL',
 					expansionDeferred: "1",
-					errorHandling: "ignore"
+					errorHandling: "continueOnError"
 				
 				task "Smoke Tests",
 					taskType: 'PROCEDURE',

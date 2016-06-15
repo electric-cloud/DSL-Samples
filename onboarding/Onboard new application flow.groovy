@@ -74,7 +74,8 @@ project "Application Onboarding", {
 					changePermissionsPrivilege : 'allow',
 					executePrivilege : 'allow',
 					modifyPrivilege : 'allow',
-					readPrivilege : 'allow'
+					readPrivilege : 'allow',
+					objectType: 'server'
 				property '/jobs/\$[/myJob]/aclEntry', value: 'project: \$[appName]'
 			""".stripIndent()		
 			
