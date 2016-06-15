@@ -5,6 +5,7 @@ Description: Create environment and application models
 */
 import groovy.json.JsonOutput
 
+def projName  = "$[projName]"
 def appName  = "$[appName]"
 def artifactGroup = "$[artifactGroup]"
 def artifactKey = "$[artifactKey]"
@@ -17,7 +18,7 @@ def artifactName_ = artifactGroup + ':' + artifactKey
 
 def appEnvTiers = [(appTier):envTier]
 
-project "Default", {
+project projName, {
 	// Create Environments, Tiers and Resources
 	def resources = []
 	def environments = []
