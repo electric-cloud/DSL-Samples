@@ -4,7 +4,7 @@ File: clean.groovy
 Description: Remove all objects created by generate release
 
 */
-def projName = $[projName]
+def projName = "$[projName]"
 def release = "$[release]"
 def pipeline = "$[pipeline]"
 def artifacts  = $[artifacts]
