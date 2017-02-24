@@ -5,13 +5,15 @@ Description:
 
 */
 
+
+def projName  = "$[projName]"
 def appName  = "$[appName]"
 def appTech  = "$[appTech]"
 def dslDir = "$[/myProject/dslDir]"
 //def stages = $ [/myProject/stages] // Literal string to create stage mapping of logical and actual stage names
 def stages = "$[stages]".split(",")
 
-project appName, {
+project projName, {
 
 	procedure "CI", {
 		formalParameter "app"

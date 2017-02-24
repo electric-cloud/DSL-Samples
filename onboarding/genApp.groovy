@@ -21,7 +21,7 @@ def artifactName_ = artifactGroup + ':' + artifactKey
 
 def appEnvTiers = [(appTier):envTier]
 
-project "Default", {
+project "$[projName]", {
 	// Create Environments, Tiers and Resources
 	def resources = []
 	def environments = []

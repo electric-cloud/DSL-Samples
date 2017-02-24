@@ -14,10 +14,18 @@ def dslDir = "/home/lrochette/GitHub/DSL-Samples/Release Model/"
 def projectName = "On line bank Release"
 def artifactGroup = "com.mybank.apps"
 
+// print date in yyyy-mm-dd format
+def formatDate(d) {
+	year = d.year+1900
+	date = d.date
+	month = d.month+1
+	return "${year}-${month}-${date}"
+}
+
 def release = [
   name: "Quarterly Online Banking Release",
-  plannedStartDate: "2015-12-05",
-  plannedEndDate: "2015-12-31",
+  plannedStartDate: (String) formatDate(new Date()),
+  plannedEndDate: (String) formatDate(new Date()+14),
   pipeline: [
     name: "Quarterly Online Banking Pipeline",
     stages: ["UAT", "STG", "PROD"]
@@ -44,8 +52,8 @@ project projectName, {
 	procedure "UpdateTicket"
 	procedure "SeleniumTests"
 
-
 	procedure "Create Application",{
+		formalParameter "projName", required: "1"
 		formalParameter "appName", required: "1"
 		formalParameter "version", required: "1"
 		formalParameter "artifactGroup", required: "1"
@@ -85,13 +93,15 @@ project projectName, {
 			command: new File(dslDir + "createAppModel.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
 	step "Deploy to snapshot environment",
-		command: "ectool runProcess Default \"\$[appName]\" Deploy --environmentName \"\$[snapEnv]\""
+		command: "ectool runProcess \"\$[projName]\" \"\$[appName]\" Deploy --environmentName \"\$[snapEnv]\""
 	step "Wait for deploy", command: "sleep 10", shell: "ec-perl"
 	step "Create snapshot",
-		command: "ectool createSnapshot Default \"\$[appName]\" \"\$[version]\" --environmentName \"\$[snapEnv]\""
+		command: "ectool createSnapshot \"\$[projName]\" \"\$[appName]\" \"\$[version]\" --environmentName \"\$[snapEnv]\"",
+			errorHandling: "ignore"
 	}
 
 	procedure "Create Pipeline",{
+		formalParameter "projName", required: "1"
 		formalParameter "stages", required: "1"
 		formalParameter "release", required: "1"
 
@@ -101,6 +111,7 @@ project projectName, {
 	}
 
 	procedure "Create Release",{
+		formalParameter "projName", required: "1"
 		formalParameter "release", required: "1"
 		formalParameter "applications", required: "1"
 		formalParameter "versions", required: "1"
@@ -116,6 +127,20 @@ project projectName, {
 
 	procedure "Assemble",{
 
+		step "Open Permissions",
+		shell: "ectool evalDsl --dslFile {0}",
+		command: """\
+			aclEntry principalName : 'project: $projectName',
+				principalType : 'user',
+				systemObjectName : 'server',
+				changePermissionsPrivilege : 'allow',
+				executePrivilege : 'allow',
+				modifyPrivilege : 'allow',
+				readPrivilege : 'allow',
+				objectType: 'server'
+			property '/jobs/\$[/myJob]/aclEntry', value: 'project: $projectName'
+		""".stripIndent()
+
 		// Create Application and Environment Models
 		release.apps.each { app ->
 			applications.push(app.name)
@@ -124,6 +149,7 @@ project projectName, {
 				subproject : projectName,
 				subprocedure : "Create Application",
 				actualParameter : [
+					projName: projectName,
 					appName: app.name,  // required
 					version: app.version,
 					artifactGroup: artifactGroup,
@@ -139,6 +165,7 @@ project projectName, {
 			subproject : projectName,
 			subprocedure : "Create Pipeline",
 			actualParameter : [
+				projName: projectName,
 				stages: release.pipeline.stages.join(","),
 				release: release.name
 			]
@@ -147,6 +174,7 @@ project projectName, {
 			subproject : projectName,
 			subprocedure : "Create Release",
 			actualParameter : [
+				projName: projectName,
 				release: release.name,
 				applications: release.apps.name.join(","),
 				versions: release.apps.version.join(","),
@@ -157,6 +185,7 @@ project projectName, {
 
 		step "Write out properties",
 			command: "" +
+				'property "/jobs/$[/myJob]/projName", value: "' + projectName + "\"\n" +
 				'property "/jobs/$[/myJob]/release", value: ' + JsonOutput.toJson(release.name) + "\n" +
 				'property "/jobs/$[/myJob]/pipeline", value: ' + JsonOutput.toJson(release.name) + "\n" +
 				'property "/jobs/$[/myJob]/applications", value: \'' + JsonOutput.toJson(applications) + "\'\n" +

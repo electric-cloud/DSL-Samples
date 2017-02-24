@@ -10,13 +10,13 @@ project "$[/myProject]", {  // That is, the Onboarding project
 				deleteArtifact artifactName: "$[artifacts]"
 				
 				$[environments].each {
-					deleteEnvironment environmentName: it, projectName: "Default"
+					deleteEnvironment environmentName: it, projectName: "$[projName]"
 				}
 
 				deleteApplication applicationName: "$[appName]",
-					projectName: "Default"
+					projectName: "$[projName]"
 				deletePipeline pipelineName: "$[appName]",
-					projectName: "Default"
+					projectName: "$[projName]"
 				
 				// Remove project from CI property list for admin
 				setProperty(propertyName: "/users/admin/ec_ci/ciProjects", value:

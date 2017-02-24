@@ -68,14 +68,15 @@ project "Application Onboarding", {
 		step "Open Permissions",
 			shell: "ectool evalDsl --dslFile {0}",
 			command: """\
-				aclEntry principalName : 'project: \$[appName]',
+				aclEntry principalName : 'project: \$[projName]',
 					principalType : 'user',
 					systemObjectName : 'server',
 					changePermissionsPrivilege : 'allow',
 					executePrivilege : 'allow',
 					modifyPrivilege : 'allow',
-					readPrivilege : 'allow'
-				property '/jobs/\$[/myJob]/aclEntry', value: 'project: \$[appName]'
+					readPrivilege : 'allow',
+					objectType: 'server'
+				property '/jobs/\$[/myJob]/aclEntry', value: 'project: \$[projName]'
 			""".stripIndent()		
 			
 		step "Generate Procedures",

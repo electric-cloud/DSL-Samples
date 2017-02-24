@@ -5,6 +5,7 @@ Description: Create release
 
 */
 
+def projName = "$[projName]"
 def releaseName = "$[release]"
 def applications = "$[applications]".split(",") // comma separated list
 def versions = "$[versions]".split(",") // comma separated list
@@ -12,7 +13,7 @@ def stages = "$[stages]".split(",") // comma separated list
 def startDate = "$[plannedStartDate]"
 def endDate = "$[plannedEndDate]"
 
-project "Default", {
+project projName, {
 	release releaseName,
 		pipelineName: releaseName,
 		pipelineProjectName: projectName,
@@ -29,7 +30,7 @@ project "Default", {
 						
 							stages.each { st ->
 								deployerConfiguration environmentName: "Banking-${st}",
-									environmentProjectName: "Default",
+									environmentProjectName: projectName,
 									stageName: st
 								
 							} // Each stage

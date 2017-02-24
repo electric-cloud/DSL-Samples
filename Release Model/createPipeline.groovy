@@ -5,10 +5,11 @@ Description: Create release pipeline
 
 */
 
+def projName = "$[projName]"
 def stages = "$[stages]".split(",") // comma separated list
 def pipelineName = "$[release]"
 
-project "Default", {
+project projName, {
 	pipeline pipelineName, {
 		stages.eachWithIndex { st, index ->
 			stage st,{
@@ -16,11 +17,11 @@ project "Default", {
 					taskType: "DEPLOYER"
 				task "Update ticket",
 					taskType: 'PROCEDURE',
-					subproject: "$[/myProject]",
+					subproject: projectName,
 					subprocedure: "UpdateTicket"
 				task "Test Automation",
 					taskType: 'PROCEDURE',
-					subproject: "$[/myProject]",
+					subproject: projectName,
 					subprocedure: "SeleniumTests"
 				if (index == 0) {
 					task "Test Automation"

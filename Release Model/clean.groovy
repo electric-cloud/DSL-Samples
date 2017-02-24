@@ -4,6 +4,7 @@ File: clean.groovy
 Description: Remove all objects created by generate release
 
 */
+def projName = "$[projName]"
 def release = "$[release]"
 def pipeline = "$[pipeline]"
 def artifacts  = $[artifacts]
@@ -17,13 +18,13 @@ def delEnvironments = ""
 def delApplications = ""
 artifacts.each {delArtifacts += "ectool deleteArtifact \"$it\"\n"}
 resources.each {delResources += "ectool deleteResource \"$it\"\n"}
-environments.each {delEnvironments += "ectool deleteEnvironment Default \"$it\"\n"}
-applications.each {delApplications += "ectool deleteApplication Default \"$it\"\n"}
+environments.each {delEnvironments += "ectool deleteEnvironment \"$projName\" \"$it\"\n"}
+applications.each {delApplications += "ectool deleteApplication \"$projName\" \"$it\"\n"}
 
 project "$[/myProject]", {
 	procedure "Clean - $release",{
-		step "Delete Release", command: "ectool deleteRelease Default \"$release\""
-		step "Delete Pipeline", command: "ectool deletePipeline Default \"$pipeline\""
+		step "Delete Release", command: "ectool deleteRelease \"$projName\" \"$release\""
+		step "Delete Pipeline", command: "ectool deletePipeline \"$projName\" \"$pipeline\""
 		step "Delete Applications", command: delApplications
 		step "Delete Environments", command: delEnvironments
 		step "Delete Resources", command: delResources

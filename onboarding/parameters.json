@@ -1,5 +1,11 @@
 [
   {
+    "name": "projName",
+    "label": "Project Name",
+    "description": "The name of the project for the on-boarded application",
+    "defaultValue": "My Proj"
+  },
+  {
     "name": "appName",
     "label": "Application Name",
     "description": "The name of the application to be on-boarded",
