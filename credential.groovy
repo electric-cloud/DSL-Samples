@@ -9,12 +9,11 @@ Note: for the impersonation to work, you need to enter a valid user/password
 
 Command-line run instructions
 -----------------------------
-        ectool evalDsl --dslFile credntial.groovy
+        ectool evalDsl --dslFile credential.groovy
 
 Run from Command Step
 ---------------------
         Set shell to:  ectool evalDsl --dslFile {0}
-
 */
 
 def String _cred="userCred"     // credentialName
