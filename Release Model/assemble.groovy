@@ -9,7 +9,7 @@ ectool evalDsl --dslFile "assemble.groovy"
 
 import groovy.json.JsonOutput
 
-def dslDir = "/vagrant/DSL-Samples/Release Model/"
+def dslDir = "/home/lrochette/GitHub/DSL-Samples/Release Model/"
 
 def projectName = "On line bank Release"
 def artifactGroup = "com.mybank.apps"
@@ -40,18 +40,19 @@ def artifacts = []
 
 project projectName, {
 
+  ec_tags="DSL"         // to isolate project more easily
 	procedure "UpdateTicket"
 	procedure "SeleniumTests"
 
 
 	procedure "Create Application",{
 		formalParameter "appName", required: "1"
-		formalParameter "version", required: "1"	
+		formalParameter "version", required: "1"
 		formalParameter "artifactGroup", required: "1"
 		formalParameter "artifactKey", required: "1"
 		formalParameter "envs", required: "1"
 		formalParameter "snapEnv", required: "1"
-		
+
 	step "Create Installer sh",
 	  subproject : "/plugins/EC-FileOps/project",
 	  subprocedure : "AddTextToFile",
@@ -89,7 +90,7 @@ project projectName, {
 	step "Create snapshot",
 		command: "ectool createSnapshot Default \"\$[appName]\" \"\$[version]\" --environmentName \"\$[snapEnv]\""
 	}
-	
+
 	procedure "Create Pipeline",{
 		formalParameter "stages", required: "1"
 		formalParameter "release", required: "1"
@@ -98,7 +99,7 @@ project projectName, {
 			command: new File(dslDir + "createPipeline.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
 	}
-	
+
 	procedure "Create Release",{
 		formalParameter "release", required: "1"
 		formalParameter "applications", required: "1"
@@ -106,13 +107,13 @@ project projectName, {
 		formalParameter "stages", required: "1"
 		formalParameter "plannedStartDate", required: "1", description: "yyyy-mm-dd format"
 		formalParameter "plannedEndDate", required: "1", description: "yyyy-mm-dd format"
-		
+
 		step "Generate Release",
 			command: new File(dslDir + "createRelease.groovy").text,
-			shell: "ectool evalDsl --dslFile {0}"	
-		
+			shell: "ectool evalDsl --dslFile {0}"
+
 	}
-	
+
 	procedure "Assemble",{
 
 		// Create Application and Environment Models
@@ -161,7 +162,7 @@ project projectName, {
 				'property "/jobs/$[/myJob]/applications", value: \'' + JsonOutput.toJson(applications) + "\'\n" +
 				'property "/jobs/$[/myJob]/artifacts", value: \'' + JsonOutput.toJson(artifacts) + "\'\n",
 			shell: "ectool evalDsl --dslFile {0}"
-			
+
 /*				ectool setProperty /myJob/release \"$release.name\"
 				ectool setProperty /myJob/pipeline \"$release.name\"
 			""".stripIndent(),
@@ -172,7 +173,7 @@ project projectName, {
 			command: new File(dslDir + "clean.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
 	}
-	
+
 }
 
-//transaction {runProcedure projectName: "On line bank Release", procedureName: "Assemble"} 
+//transaction {runProcedure projectName: "On line bank Release", procedureName: "Assemble"}

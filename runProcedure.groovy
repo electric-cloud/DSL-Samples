@@ -1,3 +1,18 @@
+/*
+Format: Electric Flow DSL
+File: runProcedure.groovy
+Description: an example of a runprcoedure and wait for the job to finish
+
+Command-line run instructions
+-----------------------------
+        ectool evalDsl --dslFile runProcedure.groovy
+
+Run from Command Step
+---------------------
+        Set shell to:  ectool evalDsl --dslFile {0}
+
+*/
+
 project ('Hello Project') {
   procedure ('testRunProcedure') {
     formalParameter('friend')  {
