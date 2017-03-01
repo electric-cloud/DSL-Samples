@@ -9,7 +9,8 @@ ectool evalDsl --dslFile "assemble.groovy"
 
 import groovy.json.JsonOutput
 
-def dslDir = "/home/lrochette/GitHub/DSL-Samples/Release Model/"
+// def dslDir = "/home/lrochette/GitHub/DSL-Samples/Release Model/"
+def dslDir = "."
 
 def projectName = "On line bank Release"
 def artifactGroup = "com.mybank.apps"
