@@ -10,8 +10,7 @@ ectool evalDsl --dslFile "assemble.groovy"
 import groovy.json.JsonOutput
 
 // def dslDir = "/home/lrochette/GitHub/DSL-Samples/Release Model/"
-def dslDir = "."
-
+def dslDir = "/vagrant/DSL-Samples/Release Model/"
 def projectName = "On line bank Release"
 def artifactGroup = "com.mybank.apps"
 
@@ -29,18 +28,18 @@ def release = [
   plannedEndDate: (String) formatDate(new Date()+14),
   pipeline: [
     name: "Quarterly Online Banking Pipeline",
-    stages: ["UAT", "STG", "PROD"]
+    stages: ["UAT", "PreProd", "PROD"]
   ],
   apps: [
 	[name: "OB - Account Statements",
 		version: "2.4", artifactKey: "statements",
-		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ],
+		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-PreProd", "Banking-PROD"] ],
 	[name: "OB - Credit Card Accounts",
 		version: "5.1", artifactKey: "cards",
-		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"]],
+		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-PreProd", "Banking-PROD"]],
 	[name: "OB - Fund Transfer",
 		version: "1.7", artifactKey: "fund",
-		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-STG", "Banking-PROD"] ]
+		snapEnv: "Banking-DEV", envs: ["Banking-UAT", "Banking-PreProd", "Banking-PROD"] ]
 	]
 ]
 
@@ -114,6 +113,7 @@ project projectName, {
 	procedure "Create Release",{
 		formalParameter "projName", required: "1"
 		formalParameter "release", required: "1"
+		formalParameter "pipeName", required: "1"
 		formalParameter "applications", required: "1"
 		formalParameter "versions", required: "1"
 		formalParameter "stages", required: "1"
@@ -177,6 +177,7 @@ project projectName, {
 			actualParameter : [
 				projName: projectName,
 				release: release.name,
+                pipeName: release.pipeline.name,
 				applications: release.apps.name.join(","),
 				versions: release.apps.version.join(","),
 				stages: release.pipeline.stages.join(","),

@@ -7,6 +7,7 @@ Description: Create release
 
 def projName = "$[projName]"
 def releaseName = "$[release]"
+def pipeName = "$[pipeName]"
 def applications = "$[applications]".split(",") // comma separated list
 def versions = "$[versions]".split(",") // comma separated list
 def stages = "$[stages]".split(",") // comma separated list
@@ -15,7 +16,7 @@ def endDate = "$[plannedEndDate]"
 
 project projName, {
 	release releaseName,
-		pipelineName: releaseName,
+		pipelineName: pipeName,
 		pipelineProjectName: projectName,
 		plannedStartDate: startDate,
 		plannedEndDate: endDate,{
