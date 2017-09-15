@@ -27,7 +27,7 @@ def release = [
   plannedStartDate: (String) formatDate(new Date()),
   plannedEndDate: (String) formatDate(new Date()+14),
   pipeline: [
-    name: "Quarterly Online Banking Pipeline",
+    name: "Quarterly Online Banking Release",
     stages: ["UAT", "PreProd", "PROD"]
   ],
   apps: [
@@ -93,7 +93,7 @@ project projectName, {
 			command: new File(dslDir + "createAppModel.groovy").text,
 			shell: "ectool evalDsl --dslFile {0}"
 	step "Deploy to snapshot environment",
-		command: "ectool runProcess \"\$[projName]\" \"\$[appName]\" Deploy --environmentName \"\$[snapEnv]\""
+		command: "ectool runProcess \"\$[projName]\" \"\$[appName]\" Deploy --environmentName \"\$[snapEnv]\" --actualParameter \"ErrorLevel=INFO\""
 	step "Wait for deploy", command: "sleep 10", shell: "ec-perl"
 	step "Create snapshot",
 		command: "ectool createSnapshot \"\$[projName]\" \"\$[appName]\" \"\$[version]\" --environmentName \"\$[snapEnv]\"",

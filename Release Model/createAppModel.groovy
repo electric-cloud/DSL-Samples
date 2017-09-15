@@ -114,7 +114,15 @@ project projName, {
 		}
 		
 		process processName: "Deploy",{
-			processStep  processStepName: "Install $artifactKey",
+            formalParameter 'ErrorLevel', defaultValue: null, {
+              description = 'Specify the Error Level for the deployment'
+              expansionDeferred = '0'
+              label = null
+              orderIndex = '1'
+              required = '1'
+              type = 'select'
+            }
+			processStep  processStepName: "Install $artifactKey", 
 				processStepType: 'process',
 				componentName: null,
 				applicationName: appName,
@@ -124,7 +132,44 @@ project projName, {
 				subcomponentApplicationName: appName,
 				subcomponentProcess: "Install",
 				applicationTierName: appTier
-		}
+            
+            property 'ec_customEditorData', {
+                property 'parameters', {
+                    property 'ErrorLevel', {
+                        property 'options', {
+                            property 'option1', {
+                                property 'text', value: 'INFO', {
+                                    expandable = '1'
+                                }
+                                property 'value', value: 'INFO', {
+                                    expandable = '1'
+                                }
+                            }
+                            property 'option2', {
+                                property 'text', value: 'WARNING', {
+                                    expandable = '1'
+                                }
+                                property 'value', value: 'WARNING', {
+                                    expandable = '1'
+                                }
+                            }
+                            property 'option3', {
+                                property 'text', value: 'ERROR', {
+                                    expandable = '1'
+                                }
+                                property 'value', value: 'ERROR', {
+                                    expandable = '1'
+                                }
+                            }
+                            optionCount = '3'
+                            property 'type', value: 'list', {
+                                expandable = '1'
+                            }
+                        }
+                    }
+                }
+            }
+        }
 		
 		//envs.each { envShorthand, envName ->
 		envs.each { env ->
@@ -133,7 +178,5 @@ project projName, {
 				environmentName: "${env}",
 				tierMapping: appEnvTiers			
 		}
-
-	} // Applications
-
+	}
 }
