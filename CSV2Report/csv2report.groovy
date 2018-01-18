@@ -100,8 +100,6 @@ def createSampleDashboardWithReport(def headers, def rows) {
             }'''
         }
 
-        //TODO: temp
-        deleteDashboard dashboardName: dashboardName, projectName: projName
         dashboard dashboardName, {
             //TODO: add DateFilter dynamically based on report object structure
             reportingFilter 'DateFilter', {
