@@ -38,10 +38,13 @@ def amazonConfigurations = [
     'desc': 'EC2 configuration, created by DSL',
     'resource_pool': 'local',
     'service_url': 'https://ec2.amazonaws.com',
+    'http_proxy': 'http://localhost:3128',
     'workspace': 'default',
-    'attempt': '1',
+    'attempt': '0',
     'userName': 'PROVIDE EC2 Access Key ID',
     'password': 'PROVIDE EC2 Secret Access Key',
+    'proxyUserName': 'Proxy Username',
+    'proxyPassword': 'Proxy Password',
 ];
 
 // 4 (b) Update the following provisioning parameters for your EC2 account
@@ -52,6 +55,7 @@ def amazonParameters = [
     'image': 'ami-17b75453',
     'instanceInitiatedShutdownBehavior': '',
     'instanceType': 'm1.small',
+    'instanceInitiatedShutdownBehavior': ''
     'keyname': 'ECPluginTest',
     'privateIp': '',
     'propResult': '',
@@ -182,8 +186,10 @@ def createConfigEC2(P) {
         }
         Params.put(it, P.get(it));
     }
-    
-    createConfig([
+    if (P.http_proxy) {
+        Params.put("http_proxy", P.get("http_proxy"));
+    }
+    def createConfigParams = [
                  pluginName: 'EC-EC2',
                  pluginProperty: 'ec2_cfgs',
                  config_name: P.config_name,
@@ -192,7 +198,16 @@ def createConfigEC2(P) {
                      password: P.password,
                  ],
                  configParams: Params
-                 ]);
+    ];
+    if (P.http_proxy && P.proxyUserName && P.proxyPassword) {
+        createConfigParams.credential2 = [
+            credential_name: P.config_name + '_proxy_credential',
+            credentialParameter: 'proxy_credential',
+            userName: P.proxyUserName,
+            password: P.proxyPassword,
+        ];
+    }
+    createConfig(createConfigParams);
 }
 
 
